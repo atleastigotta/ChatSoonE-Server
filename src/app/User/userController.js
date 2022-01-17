@@ -11,9 +11,9 @@ const regexEmail = require("regex-email");
  * API Name : 테스트 API
  * [GET] /app/test
  */
-// exports.getTest = async function (req, res) {
-//     return res.send(response(baseResponse.SUCCESS))
-// }
+exports.getTest = async function (req, res) {
+    return res.send(response(baseResponse.SUCCESS))
+}
 
 /**
  * API No. 1
