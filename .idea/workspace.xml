@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="브랜치 테스트 (임시파일 삭제)">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +68,7 @@
       <workItem from="1642405439900" duration="3065000" />
       <workItem from="1642417877370" duration="10955000" />
       <workItem from="1642603538862" duration="6798000" />
-      <workItem from="1642651417104" duration="17358000" />
+      <workItem from="1642651417104" duration="17834000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
