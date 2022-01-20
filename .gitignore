@@ -1,0 +1,4 @@
+# private
+config/kakaoOauth.js
+#config/database.js
+config/secret.js
