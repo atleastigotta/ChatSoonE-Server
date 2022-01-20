@@ -11,6 +11,9 @@ module.exports = {
     TOKEN_VERIFICATION_SUCCESS : { "isSuccess": true, "code": 1001, "message":"JWT 토큰 검증 성공" }, // ?
 
     //Request error
+    IMAGE_EMPTY : { "isSuccess": false, "code": 2000, "message":"업로드할 이미지를 선택해주세요." },
+    IMAGE_NOT_EXISTS : { "isSuccess": false, "code": 2001, "message":"이미지가 존재하지 않습니다." },
+
     SIGNUP_EMAIL_EMPTY : { "isSuccess": false, "code": 2001, "message":"이메일을 입력해주세요" },
     SIGNUP_EMAIL_LENGTH : { "isSuccess": false, "code": 2002, "message":"이메일은 30자리 미만으로 입력해주세요." },
     SIGNUP_EMAIL_ERROR_TYPE : { "isSuccess": false, "code": 2003, "message":"이메일을 형식을 정확하게 입력해주세요." },

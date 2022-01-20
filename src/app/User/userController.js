@@ -3,8 +3,18 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
+const passport = require('passport');
+const KakaoStrategy = require('passport-kakao').Strategy;
 
 const regexEmail = require("regex-email");
+
+passport.use('kakao-login', new KakaoStrategy({
+    clientID: 'd78a94142d0c7f4e304d6a19a3b20844',
+    callbackURL: 'http://localhost:3000/kakao/oauth',
+}, async (accessToken, refreshToken, profile, done) => {
+    console.log(accessToken);
+    console.log(profile);
+}))
 
 /**
  * API No. 0

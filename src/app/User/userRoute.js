@@ -1,9 +1,18 @@
 module.exports = function(app){
     const user = require('./userController');
+    const passport = require('passport');
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
     // 0. 테스트 API
     app.get('/app/test', user.getTest);
+
+    // 카카오 로그인
+    // app.post('/app/users/kakao-login', user.kakaoLogin);
+    app.get('/kakao', passport.authenticate('kakao-login'));
+    app.get('/kakao/oauth', passport.authenticate('kakao-login', {
+        successRedirect: '/',
+        failureRedirect : '/',
+    }), (req, res) => {res.redirect('/');});
 
     // 1. 유저 생성 (회원가입) API
     app.post('/app/users', user.postUsers);
