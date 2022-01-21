@@ -13,7 +13,6 @@ config/database.js
 config/secret.js
 
 # unneccessary
-node_modules
 package-lock.json
 
 # Logs

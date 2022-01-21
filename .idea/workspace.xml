@@ -2,9 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="브랜치 테스트 (임시파일 삭제)">
+      <change afterPath="$PROJECT_DIR$/src/app/Chat/chatController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/Chat/chatDao.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/Chat/chatProvider.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/Chat/chatRoute.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/Chat/chatService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/database.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/secret.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/secret.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/baseResponseStatus.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/baseResponseStatus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/User/userRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userRoute.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,10 +60,16 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/Chat" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/Chat" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -70,7 +82,8 @@
       <workItem from="1642405439900" duration="3065000" />
       <workItem from="1642417877370" duration="10955000" />
       <workItem from="1642603538862" duration="6798000" />
-      <workItem from="1642651417104" duration="18161000" />
+      <workItem from="1642651417104" duration="24004000" />
+      <workItem from="1642764477867" duration="1378000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
