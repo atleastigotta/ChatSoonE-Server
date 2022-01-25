@@ -6,42 +6,108 @@ const chatDao = require("./chatDao");
 // Provider: Read 비즈니스 로직 처리
 
 exports.retrieveChatList = async function (userIdx) {
+  // connection 은 db와의 연결을 도와줌
+  const connection = await pool.getConnection(async (conn) => conn);
+  // Dao 쿼리문의 결과를 호출
+  const chatListResult = await chatDao.selectChatList(connection, userIdx);
+  // connection 해제
+  connection.release();
 
-  if (!userIdx) {
-    // connection 은 db와의 연결을 도와줌
-    const connection = await pool.getConnection(async (conn) => conn);
-    // Dao 쿼리문의 결과를 호출
-    const chatListResult = await chatDao.selectChatList(connection, userIdx);
-    // connection 해제
-    connection.release();
-
-    return chatListResult;
-
-  } else {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const chatListResult = await chatDao.selectchatEmail(connection, email);
-    connection.release();
-
-    return chatListResult;
-  }
+  return chatListResult;
 };
 
-exports.retrievechat = async function (chatId) {
+exports.retrievePersonalChats = async function (userIdx, otherUserIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const chatResult = await chatDao.selectchatId(connection, chatId);
+  const chatResult = await chatDao.selectPersonalChat(connection, userIdx, otherUserIdx);
 
   connection.release();
 
-  return chatResult[0]; // 한 명의 유저 정보만을 불러오므로 배열 타입을 리턴하는 게 아닌 0번 인덱스를 파싱해서 오브젝트 타입 리턴
+  return chatResult;
 };
 
-exports.emailCheck = async function (email) {
+exports.retrieveGroupChats = async function (userIdx, groupName) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const emailCheckResult = await chatDao.selectchatEmail(connection, email);
+  const chatResult = await chatDao.selectGroupChat(connection, userIdx, groupName);
+
   connection.release();
 
-  return emailCheckResult;
+  return chatResult;
 };
+
+exports.retrieveFolderChats = async function (userIdx, folderIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const chatResult = await chatDao.selectFolderChat(connection, userIdx, folderIdx);
+
+  connection.release();
+
+  return chatResult;
+};
+
+exports.chatCheck = async function (chatIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const chatCheckResult = await chatDao.selectChat(connection, chatIdx);
+  connection.release();
+  // console.log(chatCheckResult);
+
+  return chatCheckResult;
+};
+
+exports.chatUserCheck = async function (userIdx, otherUserIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const chatCheckResult = await chatDao.selectUserChat(connection, userIdx, otherUserIdx);
+  connection.release();
+  // console.log(chatCheckResult);
+
+  return chatCheckResult;
+};
+
+exports.chatGroupCheck = async function (userIdx, groupName) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const chatCheckResult = await chatDao.selectGroupChat(connection, userIdx, groupName);
+  connection.release();
+  // console.log(chatCheckResult);
+
+  return chatCheckResult;
+};
+
+exports.chatDeleteCheck = async function (chatIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const chatDeleteCheckResult = await chatDao.selectDeleteChat(connection, chatIdx);
+  connection.release();
+  // console.log(chatDeleteCheckResult);
+
+  return chatDeleteCheckResult;
+};
+
+exports.userBlockCheck = async function (userIdx, otherUserIdx, groupName) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  let userBlockResult;
+  if(!groupName)
+    // 갠톡일 경우
+    userBlockResult = await chatDao.selectBlockedUser(connection, userIdx, otherUserIdx);
+  else
+    // 단톡일 경우
+    userBlockResult = await chatDao.selectBlockedChat(connection, userIdx, groupName);
+  connection.release();
+
+  return userBlockResult;
+};
+
+// exports.postTimeCheck = async function (userIdx, otherUserIdx, groupName, postTime) {
+//   const connection = await pool.getConnection(async (conn) => conn);
+//   let postTimeCheckResult;
+//   if(!groupName)
+//       // 갠톡일 경우
+//     postTimeCheckResult = await chatDao.selectPostTimeUser(connection, userIdx, otherUserIdx);
+//   else
+//       // 단톡일 경우
+//     postTimeCheckResult = await chatDao.selectPostTimeGroup(connection, userIdx, groupName);
+//   connection.release();
+//
+//   return postTimeCheckResult;
+// };
+
+
 
 exports.passwordCheck = async function (selectchatPasswordParams) {
   const connection = await pool.getConnection(async (conn) => conn);
@@ -52,12 +118,4 @@ exports.passwordCheck = async function (selectchatPasswordParams) {
   );
   connection.release();
   return passwordCheckResult[0];
-};
-
-exports.accountCheck = async function (email) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const chatAccountResult = await chatDao.selectchatAccount(connection, email);
-  connection.release();
-
-  return chatAccountResult;
 };

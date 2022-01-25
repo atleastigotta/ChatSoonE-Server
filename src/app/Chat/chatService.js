@@ -15,29 +15,87 @@ const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
-exports.createchat = async function (email, password, nickname) {
+exports.deleteChat = async function (userIdx, chatIdx) {
     try {
-        // 이메일 중복 확인
-        // chatProvider에서 해당 이메일과 같은 chat 목록을 받아서 emailRows에 저장한 후, 배열의 길이를 검사한다.
-        // -> 길이가 0 이상이면 이미 해당 이메일을 갖고 있는 chat가 조회된다는 의미
-        const emailRows = await chatProvider.emailCheck(email);
-        if (emailRows.length > 0)
-            return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
+        // --논리 체크--
+        // 해당 채팅이 존재하는가
+        const chatRows = await chatProvider.chatCheck(chatIdx);
+        if (chatRows.length <= 0)
+            return errResponse(baseResponse.CHAT_NOT_EXISTS);
+        // 해당 채팅이 이미 삭제되었는가
+        const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
+        if (chatDeleteRows.length > 0)
+            return errResponse(baseResponse.CHAT_ALREADY_DELETED);
 
-        // 비밀번호 암호화
-        const hashedPassword = await crypto
-            .createHash("sha512")
-            .update(password)
-            .digest("hex");
+        const connection = await pool.getConnection(async (conn) => conn);
+        const deleteChatResult = await chatDao.deleteChat(connection, chatIdx);
+        connection.release();
 
-        // 쿼리문에 사용할 변수 값을 배열 형태로 전달
-        const insertchatInfoParams = [email, hashedPassword, nickname];
+        return response(baseResponse.SUCCESS);
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.deletePersonalChats = async function (userIdx, otherUserIdx) {
+    try {
+        // --논리 체크--
+        // 해당 채팅이 존재하는가
+        const chatRows = await chatProvider.chatUserCheck(userIdx, otherUserIdx);
+        if (chatRows.length <= 0)
+            return errResponse(baseResponse.OPPONENT_NOT_EXISTS);
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const deleteUserChatResult = await chatDao.deleteUserChat(connection, userIdx, otherUserIdx);
+        connection.release();
+        return response(baseResponse.SUCCESS);
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.deleteGroupChats = async function (userIdx, groupName) {
+    try {
+        // --논리 체크--
+        // 해당 채팅이 존재하는가
+        const chatRows = await chatProvider.chatGroupCheck(userIdx, groupName);
+        if (chatRows.length <= 0)
+            return errResponse(baseResponse.GROUP_NOT_EXISTS);
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const deleteGroupChatResult = await chatDao.deleteGroupChat(connection, userIdx, groupName);
+        connection.release();
+        return response(baseResponse.SUCCESS);
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.addChat = async function (userIdx, otherUserIdx, groupName, message, postTime) {
+    try {
+        // --논리 체크--
+        // Block(차단)된 유저인가
+        const userBlockRows = await chatProvider.userBlockCheck(userIdx, otherUserIdx, groupName);
+        if (userBlockRows.length > 0) {
+            console.log('차단된 메시지이므로 추가되지 않습니다.');
+            return '차단된 톡방이므로 채팅을 추가하지 않습니다.';
+        }
+        // postTime이 제대로 설정되었나 (같은 채팅 상대의 가장 마지막 채팅 시간보다 늦은 시간인가)
+        // const postTimeCheck = await chatProvider.postTimeCheck(userIdx, otherUserIdx, groupName, postTime);
+        // if (postTimeCheck.length > 0) {
+        //     return errResponse(baseResponse.POST_TIME_WRONG);
+        // }
 
         const connection = await pool.getConnection(async (conn) => conn);
 
-        const chatIdResult = await chatDao.insertchatInfo(connection, insertchatInfoParams);
-        console.log(`추가된 회원 : ${chatIdResult[0].insertId}`)
+        // 새로운 유저이면 유저 추가하기 ???
+
+        const addChatResult = await chatDao.insertChatInfo(connection, userIdx, otherUserIdx, groupName, message, postTime);
         connection.release();
+
         return response(baseResponse.SUCCESS);
 
     } catch (err) {

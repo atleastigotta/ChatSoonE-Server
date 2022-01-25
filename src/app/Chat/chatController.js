@@ -17,15 +17,16 @@ passport.use('kakao-login', new KakaoStrategy({
 /**
  * API No. 1
  * API Name : 전체 채팅목록 가져오기 (메인 화면) API
- * [GET] /app/chatlist
+ * [GET] /app/chatlist/{kakaoUserIdx}
  */
 exports.getChatList = async function (req, res) {
-
     /**
-     * Query String: kakaoUserIdx
+     * Path Variable: kakaoUserIdx
+     * Query String:
      * Header:
+     * Body:
      */
-    const userIdx = req.query.kakaoUserIdx;
+    const userIdx = req.params.kakaoUserIdx;
 
     // --형식 체크--
     // 빈 값 체크
@@ -35,51 +36,170 @@ exports.getChatList = async function (req, res) {
     const chatListResponse = await chatProvider.retrieveChatList(userIdx);
 
     // chatListResponse 값을 json으로 전달
-    return res.send(chatListResponse);
+    return res.send(response(baseResponse.SUCCESS, chatListResponse));
 };
 
 /**
  * API No. 2
- * API Name : 유저 조회 API (+ 이메일로 검색 조회)
- * [GET] /app/chats
+ * API Name : 갠톡 or 단톡의 채팅 가져오기 API
+ * [GET] /app/chat/{kakaoUserIdx}
  */
-exports.getchats = async function (req, res) {
-
+exports.getChats = async function (req, res) {
     /**
-     * Query String: email
+     * Path Variable: kakaoUserIdx
+     * Query String: otherUserIdx, groupName
+     * Header:
+     * Body:
      */
-    const email = req.query.email;
+    const userIdx = req.params.kakaoUserIdx;
+    const otherUserIdx = req.query.otherUserIdx;
+    const groupName = req.query.groupName;
 
-    if (!email) {
-        // 유저 전체 조회
-        const chatListResult = await chatProvider.retrievechatList();
-        // SUCCESS : { "isSuccess": true, "code": 1000, "message":"성공" }, 메세지와 함께 chatListResult 호출
-        return res.send(response(baseResponse.SUCCESS, chatListResult));
-    } else {
-        // 아메일을 통한 유저 검색 조회
-        const chatListByEmail = await chatProvider.retrievechatList(email);
-        return res.send(response(baseResponse.SUCCESS, chatListByEmail));
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
+    if (!otherUserIdx && !groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+    else if (otherUserIdx && groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+
+    if (otherUserIdx && !groupName) {
+        // 갠톡 채팅 내용 조회
+        const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, otherUserIdx);
+        return res.send(response(baseResponse.SUCCESS, personalChatListResult));
+    } else if (!otherUserIdx && groupName) {
+        // 단톡 채팅 내용 조회
+        const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, groupName);
+        return res.send(response(baseResponse.SUCCESS, groupChatListResult));
     }
 };
 
 /**
  * API No. 3
- * API Name : 특정 유저 조회 API
- * [GET] /app/chats/{chatId}
+ * API Name : 폴더의 채팅 가져오기 API
+ * [GET] /app/chat-folder/{kakaoUserIdx}
  */
-exports.getchatById = async function (req, res) {
-
+exports.getFolderChats = async function (req, res) {
     /**
-     * Path Variable: chatId
+     * Path Variable: kakaoUserIdx
+     * Query String: folderIdx
+     * Header:
+     * Body:
      */
-    const chatId = req.params.chatId;
-    // errResponse 전달
-    if (!chatId) return res.send(errResponse(baseResponse.chat_chatID_EMPTY));
+    const userIdx = req.params.kakaoUserIdx;
+    const folderIdx = req.query.folderIdx;
 
-    // chatId를 통한 유저 검색 함수 호출 및 결과 저장
-    const chatBychatId = await chatProvider.retrievechat(chatId);
-    return res.send(response(baseResponse.SUCCESS, chatBychatId));
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
+
+    if (!folderIdx)
+        return res.send(response(baseResponse.FOLDER_ID_EMPTY));
+    else {
+        // 해당 폴더의 채팅 내용 조회
+        const folderChatListResult = await chatProvider.retrieveFolderChats(userIdx, folderIdx);
+        return res.send(response(baseResponse.SUCCESS, folderChatListResult));
+    }
 };
+
+/**
+ * API No. 4
+ * API Name : 선택한 채팅 삭제하기 API
+ * [POST] /app/delete-chat/{kakaoUserIdx}
+ */
+exports.postDeleteChat = async function (req, res) {
+    /**
+     * Path Variable: kakaoUserIdx
+     * Query String: chatIdx
+     * Header:
+     * Body:
+     */
+    const userIdx = req.params.kakaoUserIdx;
+    const chatIdx = req.query.chatIdx;
+
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
+
+    if (!chatIdx)
+        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+    else {
+        // 해당 채팅 삭제
+        const deleteChatResult = await chatService.deleteChat(userIdx, chatIdx);
+        return res.send(deleteChatResult);
+    }
+};
+
+/**
+ * API No. 5
+ * API Name : 선택한 채팅목록의 모든 채팅 삭제하기 API
+ * [POST] /app/deleteAll-chat/{kakaoUserIdx}
+ */
+exports.postDeleteAllChat = async function (req, res) {
+    /**
+     * Path Variable: kakaoUserIdx
+     * Query String: otherUserIdx, groupName
+     * Header:
+     * Body:
+     */
+    const userIdx = req.params.kakaoUserIdx;
+    const otherUserIdx = req.query.otherUserIdx;
+    const groupName = req.query.groupName;
+
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
+    if (!otherUserIdx && !groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+    else if (otherUserIdx && groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+
+    if (otherUserIdx && !groupName) {
+        // 갠톡 채팅 내용 삭제
+        const deletePersonalChatResult = await chatService.deletePersonalChats(userIdx, otherUserIdx);
+        return res.send(deletePersonalChatResult);
+    } else if (!otherUserIdx && groupName) {
+        // 단톡 채팅 내용 삭제
+        const deleteGroupChatResult = await chatService.deleteGroupChats(userIdx, groupName);
+        return res.send(deleteGroupChatResult);
+    }
+};
+
+/**
+ * API No. 6
+ * API Name : 채팅 추가하기 API
+ * [POST] /app/add-chat/{kakaoUserIdx}
+ */
+exports.postChat = async function (req, res) {
+    /**
+     * Path Variable: kakaoUserIdx
+     * Query String:
+     * Header:
+     * Body:
+     */
+    const userIdx = req.params.kakaoUserIdx;
+    const {otherUserIdx, groupName, message, postTime} = req.body;
+
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
+    if (!otherUserIdx)
+        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+    if (!message)
+        return res.send(response(baseResponse.MESSAGE_EMPTY));
+    if (!postTime)
+        return res.send(response(baseResponse.POST_TIME_EMPTY));
+
+    const addChatResponse = await chatService.addChat(userIdx, otherUserIdx, groupName, message, postTime);
+
+    return res.send(addChatResponse);
+};
+
 
 
 // TODO: After 로그인 인증 방법 (JWT)
@@ -97,7 +217,6 @@ exports.login = async function (req, res) {
 
     return res.send(signInResponse);
 };
-
 
 /**
  * API No. 5
