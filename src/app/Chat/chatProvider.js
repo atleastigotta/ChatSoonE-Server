@@ -3,6 +3,10 @@ const { logger } = require("../../../config/winston");
 
 const chatDao = require("./chatDao");
 
+const baseResponse = require("../../../config/baseResponseStatus");
+const {response} = require("../../../config/response");
+const {errResponse} = require("../../../config/response");
+
 // Provider: Read 비즈니스 로직 처리
 
 exports.retrieveChatList = async function (userIdx) {
@@ -18,7 +22,7 @@ exports.retrieveChatList = async function (userIdx) {
 
 exports.retrievePersonalChats = async function (userIdx, otherUserIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const chatResult = await chatDao.selectPersonalChat(connection, userIdx, otherUserIdx);
+  const chatResult = await chatDao.selectPersonalChats(connection, userIdx, otherUserIdx);
 
   connection.release();
 
@@ -27,7 +31,7 @@ exports.retrievePersonalChats = async function (userIdx, otherUserIdx) {
 
 exports.retrieveGroupChats = async function (userIdx, groupName) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const chatResult = await chatDao.selectGroupChat(connection, userIdx, groupName);
+  const chatResult = await chatDao.selectGroupChats(connection, userIdx, groupName);
 
   connection.release();
 
@@ -36,7 +40,7 @@ exports.retrieveGroupChats = async function (userIdx, groupName) {
 
 exports.retrieveFolderChats = async function (userIdx, folderIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const chatResult = await chatDao.selectFolderChat(connection, userIdx, folderIdx);
+  const chatResult = await chatDao.selectFolderChats(connection, userIdx, folderIdx);
 
   connection.release();
 
@@ -79,6 +83,16 @@ exports.chatDeleteCheck = async function (chatIdx) {
   return chatDeleteCheckResult;
 };
 
+exports.newUserCheck = async function (userIdx, nickname) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  // 새로운 채팅 상대인가
+  const newUserCheckResult = await chatDao.selectExistingUser(connection, userIdx, nickname);
+
+  connection.release();
+
+  return newUserCheckResult;
+};
+
 exports.userBlockCheck = async function (userIdx, otherUserIdx, groupName) {
   const connection = await pool.getConnection(async (conn) => conn);
   let userBlockResult;
@@ -106,16 +120,3 @@ exports.userBlockCheck = async function (userIdx, otherUserIdx, groupName) {
 //
 //   return postTimeCheckResult;
 // };
-
-
-
-exports.passwordCheck = async function (selectchatPasswordParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  // 쿼리문에 여러개의 인자를 전달할 때 selectchatPasswordParams와 같이 사용합니다.
-  const passwordCheckResult = await chatDao.selectchatPassword(
-      connection,
-      selectchatPasswordParams
-  );
-  connection.release();
-  return passwordCheckResult[0];
-};

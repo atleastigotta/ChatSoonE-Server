@@ -179,23 +179,23 @@ exports.postChat = async function (req, res) {
      * Path Variable: kakaoUserIdx
      * Query String:
      * Header:
-     * Body:
+     * Body: nickname, groupName, profileImgUrl, message, postTime
      */
     const userIdx = req.params.kakaoUserIdx;
-    const {otherUserIdx, groupName, message, postTime} = req.body;
+    const {nickname, groupName, profileImgUrl, message, postTime} = req.body;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!otherUserIdx)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+    if (!nickname)
+        return res.send(response(baseResponse.CHAT_OPPONENT_NICKNAME_EMPTY));
     if (!message)
         return res.send(response(baseResponse.MESSAGE_EMPTY));
     if (!postTime)
         return res.send(response(baseResponse.POST_TIME_EMPTY));
 
-    const addChatResponse = await chatService.addChat(userIdx, otherUserIdx, groupName, message, postTime);
+    const addChatResponse = await chatService.addChat(userIdx, nickname, groupName, profileImgUrl, message, postTime);
 
     return res.send(addChatResponse);
 };
