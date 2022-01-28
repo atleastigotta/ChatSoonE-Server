@@ -21,6 +21,7 @@ module.exports = function () {
     require('../src/app/Uploads/uploadRoute')(app);
     require('../src/app/User/userRoute')(app);
     require('../src/app/Chat/chatRoute')(app);
+    require('../src/app/Folder/folderRoute')(app);
 
     return app;
 };

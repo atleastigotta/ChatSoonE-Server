@@ -1,7 +1,6 @@
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 
-const regexEmail = require("regex-email");
 const fs = require('fs');
 const path = require('path');
 

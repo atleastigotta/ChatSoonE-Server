@@ -1,6 +1,5 @@
 const {logger} = require("../../../config/winston");
 const {pool} = require("../../../config/database");
-const secret_config = require("../../../config/secret");
 
 // chat 뿐만 아니라 다른 도메인의 Provider와 Dao도 아래처럼 require하여 사용할 수 있습니다.
 const chatProvider = require("./chatProvider");
@@ -9,9 +8,6 @@ const chatDao = require("./chatDao");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response} = require("../../../config/response");
 const {errResponse} = require("../../../config/response");
-
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
@@ -120,3 +116,122 @@ exports.addChat = async function (userIdx, nickname, groupName, profileImgUrl, m
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+exports.addChatFolder = async function (userIdx, chatIdx, folderIdx) {
+    try {
+        // --논리 체크--
+        // 해당 채팅이 존재하는가
+        const chatRows = await chatProvider.chatCheck(chatIdx);
+        if (chatRows.length <= 0)
+            return errResponse(baseResponse.CHAT_NOT_EXISTS);
+        // 해당 채팅이 이미 삭제되었는가
+        // const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
+        // if (chatDeleteRows.length > 0)
+        //     return errResponse(baseResponse.CHAT_ALREADY_DELETED);
+        // 해당 채팅이 그 폴더에 이미 존재하는가
+        const chatFolderRows = await chatProvider.chatFolderCheck(chatIdx, folderIdx);
+        if (chatFolderRows.length > 0)
+            return errResponse(baseResponse.CHAT_ALREADY_EXISTS_IN_FOLDER);
+
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        // 채팅 폴더에 추가
+        const addChatToFolderResult = await chatDao.putChatToFolder(connection, chatIdx, folderIdx);
+
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.addChatsFolder = async function (userIdx, otherUserIdx, groupName, folderIdx) {
+    try {
+        // --논리 체크--
+        // 갠톡인 경우
+        if (otherUserIdx && !groupName) {
+            // 해당 채팅이 존재하는가
+            const chatRows = await chatProvider.chatUserCheck(userIdx, otherUserIdx);
+            if (chatRows.length <= 0)
+                return errResponse(baseResponse.OPPONENT_NOT_EXISTS);
+
+            const connection = await pool.getConnection(async (conn) => conn);
+            const addChatsToFolderResult = await chatDao.putChatsToFolder(connection, otherUserIdx, folderIdx)
+            connection.release();
+        }
+        // 단톡인 경우
+        else if (!otherUserIdx && groupName) {
+            // 해당 채팅이 존재하는가
+            const chatRows = await chatProvider.chatGroupCheck(userIdx, groupName);
+            if (chatRows.length <= 0)
+                return errResponse(baseResponse.GROUP_NOT_EXISTS);
+
+            const connection = await pool.getConnection(async (conn) => conn);
+            const addChatsToFolderResult = await chatDao.putGroupChatsToFolder(connection, userIdx, groupName, folderIdx);
+            connection.release();
+        }
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.deleteChatFolder = async function (userIdx, chatIdx, folderIdx) {
+    try {
+        // --논리 체크--
+        // 해당 채팅이 존재하는가
+        const chatRows = await chatProvider.chatCheck(chatIdx);
+        if (chatRows.length <= 0)
+            return errResponse(baseResponse.CHAT_NOT_EXISTS);
+        // 해당 채팅이 이미 삭제되었는가
+        // const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
+        // if (chatDeleteRows.length > 0)
+        //     return errResponse(baseResponse.CHAT_ALREADY_DELETED);
+        // 해당 채팅이 그 폴더에 존재하는가
+        const chatFolderRows = await chatProvider.chatFolderCheck(chatIdx, folderIdx);
+        if (chatFolderRows.length <= 0)
+            return errResponse(baseResponse.CHAT_NOT_EXISTS_IN_FOLDER);
+
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        // 채팅 폴더에서 제거
+        const deleteChatFromFolderResult = await chatDao.removeChatFromFolder(connection, chatIdx, folderIdx);
+
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+// exports.blockChat = async function (userIdx, chatName) {
+//     try {
+//         // --논리 체크--
+//         // 해당 채팅이 존재하는가 (이미 블락되지는 않았는가) -> 있다면 otherUserIdx / groupName 가져오기
+//         const chatRows = await chatProvider.chatInfoCheck(userIdx, chatName);
+//         if (chatRows.length <= 0)
+//             return errResponse(baseResponse.CHAT_NOT_EXISTS);
+//         // 해당 채팅이 이미 삭제되었는가
+//         const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
+//         if (chatDeleteRows.length > 0)
+//             return errResponse(baseResponse.CHAT_ALREADY_DELETED);
+//
+//         const connection = await pool.getConnection(async (conn) => conn);
+//         const deleteChatResult = await chatDao.deleteChat(connection, chatIdx);
+//         connection.release();
+//
+//         return response(baseResponse.SUCCESS);
+//     } catch (err) {
+//         logger.error(`App - createchat Service error\n: ${err.message}`);
+//         return errResponse(baseResponse.DB_ERROR);
+//     }
+// };

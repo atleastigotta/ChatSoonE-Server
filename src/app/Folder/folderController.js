@@ -1,14 +1,14 @@
-const chatProvider = require("../../app/chat/chatProvider");
-const chatService = require("../../app/chat/chatService");
+const folderProvider = require("../../app/folder/folderProvider");
+const folderService = require("../../app/folder/folderService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 
 /**
  * API No. 1
  * API Name : 전체 채팅목록 가져오기 (메인 화면) API
- * [GET] /app/chatlist/{kakaoUserIdx}
+ * [GET] /app/folderlist/{kakaoUserIdx}
  */
-exports.getChatList = async function (req, res) {
+exports.getfolderList = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
      * Query String:
@@ -22,18 +22,18 @@ exports.getChatList = async function (req, res) {
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
 
-    const chatListResponse = await chatProvider.retrieveChatList(userIdx);
+    const folderListResponse = await folderProvider.retrievefolderList(userIdx);
 
-    // chatListResponse 값을 json으로 전달
-    return res.send(response(baseResponse.SUCCESS, chatListResponse));
+    // folderListResponse 값을 json으로 전달
+    return res.send(response(baseResponse.SUCCESS, folderListResponse));
 };
 
 /**
  * API No. 2
  * API Name : 갠톡 or 단톡의 채팅 가져오기 API
- * [GET] /app/chat/{kakaoUserIdx}
+ * [GET] /app/folder/{kakaoUserIdx}
  */
-exports.getChats = async function (req, res) {
+exports.getfolders = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
      * Query String: otherUserIdx, groupName
@@ -49,27 +49,27 @@ exports.getChats = async function (req, res) {
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
     if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+        return res.send(response(baseResponse.folder_OPPONENT_EMPTY));
     else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(response(baseResponse.folder_OPPONENT_INVALID));
 
     if (otherUserIdx && !groupName) {
         // 갠톡 채팅 내용 조회
-        const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, otherUserIdx);
-        return res.send(response(baseResponse.SUCCESS, personalChatListResult));
+        const personalfolderListResult = await folderProvider.retrievePersonalfolders(userIdx, otherUserIdx);
+        return res.send(response(baseResponse.SUCCESS, personalfolderListResult));
     } else if (!otherUserIdx && groupName) {
         // 단톡 채팅 내용 조회
-        const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, groupName);
-        return res.send(response(baseResponse.SUCCESS, groupChatListResult));
+        const groupfolderListResult = await folderProvider.retrieveGroupfolders(userIdx, groupName);
+        return res.send(response(baseResponse.SUCCESS, groupfolderListResult));
     }
 };
 
 /**
  * API No. 3
  * API Name : 폴더의 채팅 가져오기 API
- * [GET] /app/chat-folder/{kakaoUserIdx}
+ * [GET] /app/folder-folder/{kakaoUserIdx}
  */
-exports.getFolderChats = async function (req, res) {
+exports.getFolderfolders = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
      * Query String: folderIdx
@@ -88,46 +88,46 @@ exports.getFolderChats = async function (req, res) {
         return res.send(response(baseResponse.FOLDER_ID_EMPTY));
     else {
         // 해당 폴더의 채팅 내용 조회
-        const folderChatListResult = await chatProvider.retrieveFolderChats(userIdx, folderIdx);
-        return res.send(response(baseResponse.SUCCESS, folderChatListResult));
+        const folderfolderListResult = await folderProvider.retrieveFolderfolders(userIdx, folderIdx);
+        return res.send(response(baseResponse.SUCCESS, folderfolderListResult));
     }
 };
 
 /**
  * API No. 4
  * API Name : 선택한 채팅 삭제하기 API
- * [DELETE] /app/delete-chat/{kakaoUserIdx}
+ * [DELETE] /app/delete-folder/{kakaoUserIdx}
  */
-exports.deleteChat = async function (req, res) {
+exports.deletefolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatIdx
+     * Query String: folderIdx
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatIdx = req.query.chatIdx;
+    const folderIdx = req.query.folderIdx;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
 
-    if (!chatIdx)
-        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+    if (!folderIdx)
+        return res.send(response(baseResponse.folder_ID_EMPTY));
     else {
         // 해당 채팅 삭제
-        const deleteChatResult = await chatService.deleteChat(userIdx, chatIdx);
-        return res.send(deleteChatResult);
+        const deletefolderResult = await folderService.deletefolder(userIdx, folderIdx);
+        return res.send(deletefolderResult);
     }
 };
 
 /**
  * API No. 5
  * API Name : 선택한 채팅목록의 모든 채팅 삭제하기 API
- * [DELETE] /app/deleteAll-chat/{kakaoUserIdx}
+ * [DELETE] /app/deleteAll-folder/{kakaoUserIdx}
  */
-exports.deleteAllChat = async function (req, res) {
+exports.deleteAllfolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
      * Query String: otherUserIdx, groupName
@@ -143,27 +143,27 @@ exports.deleteAllChat = async function (req, res) {
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
     if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+        return res.send(response(baseResponse.folder_OPPONENT_EMPTY));
     else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(response(baseResponse.folder_OPPONENT_INVALID));
 
     if (otherUserIdx && !groupName) {
         // 갠톡 채팅 내용 삭제
-        const deletePersonalChatResult = await chatService.deletePersonalChats(userIdx, otherUserIdx);
-        return res.send(deletePersonalChatResult);
+        const deletePersonalfolderResult = await folderService.deletePersonalfolders(userIdx, otherUserIdx);
+        return res.send(deletePersonalfolderResult);
     } else if (!otherUserIdx && groupName) {
         // 단톡 채팅 내용 삭제
-        const deleteGroupChatResult = await chatService.deleteGroupChats(userIdx, groupName);
-        return res.send(deleteGroupChatResult);
+        const deleteGroupfolderResult = await folderService.deleteGroupfolders(userIdx, groupName);
+        return res.send(deleteGroupfolderResult);
     }
 };
 
 /**
  * API No. 6
  * API Name : 채팅 추가하기 API
- * [POST] /app/add-chat/{kakaoUserIdx}
+ * [POST] /app/add-folder/{kakaoUserIdx}
  */
-exports.postChat = async function (req, res) {
+exports.postfolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
      * Query String:
@@ -178,53 +178,52 @@ exports.postChat = async function (req, res) {
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
     if (!nickname)
-        return res.send(response(baseResponse.CHAT_OPPONENT_NICKNAME_EMPTY));
+        return res.send(response(baseResponse.folder_OPPONENT_NICKNAME_EMPTY));
     if (!message)
         return res.send(response(baseResponse.MESSAGE_EMPTY));
     if (!postTime)
         return res.send(response(baseResponse.POST_TIME_EMPTY));
 
-    const addChatResponse = await chatService.addChat(userIdx, nickname, groupName, profileImgUrl, message, postTime);
+    const addfolderResponse = await folderService.addfolder(userIdx, nickname, groupName, profileImgUrl, message, postTime);
 
-    return res.send(addChatResponse);
+    return res.send(addfolderResponse);
 };
 
 /**
  * API No. 7
  * API Name : 폴더에 채팅 추가하기 API
- * [POST] /app/add-chat-folder/{kakaoUserIdx}
+ * [POST] /app/add-folder-folder/{kakaoUserIdx}
  */
-exports.addChatToFolder = async function (req, res) {
+exports.addfolderToFolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatIdx
+     * Query String: folderIdx
      * Header:
      * Body: folderIdx
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatIdx = req.query.chatIdx;
-    const folderIdx = req.body.folderIdx;
+    const folderIdx = req.query.folderIdx;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!chatIdx)
-        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+    if (!folderIdx)
+        return res.send(response(baseResponse.folder_ID_EMPTY));
     if (!folderIdx)
         return res.send(response(baseResponse.FOLDER_ID_EMPTY));
 
-    const addChatFolderResponse = await chatService.addChatFolder(userIdx, chatIdx, folderIdx);
+    const addfolderFolderResponse = await folderService.addfolderFolder(userIdx, folderIdx, folderIdx);
 
-    return res.send(addChatFolderResponse);
+    return res.send(addfolderFolderResponse);
 };
 
 /**
  * API No. 8
  * API Name : 폴더에 채팅목록 추가하기 API
- * [POST] /app/add-chats-folder/{kakaoUserIdx}
+ * [POST] /app/add-folders-folder/{kakaoUserIdx}
  */
-exports.addChatsToFolder = async function (req, res) {
+exports.addfoldersToFolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
      * Query String: otherUserIdx, groupName
@@ -243,71 +242,70 @@ exports.addChatsToFolder = async function (req, res) {
     if (!folderIdx)
         return res.send(response(baseResponse.FOLDER_ID_EMPTY));
     if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+        return res.send(response(baseResponse.folder_OPPONENT_EMPTY));
     else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(response(baseResponse.folder_OPPONENT_INVALID));
 
-    const addChatsFolderResponse = await chatService.addChatsFolder(userIdx, otherUserIdx, groupName, folderIdx);
+    const addfoldersFolderResponse = await folderService.addfoldersFolder(userIdx, otherUserIdx, groupName, folderIdx);
 
-    return res.send(addChatsFolderResponse);
+    return res.send(addfoldersFolderResponse);
 };
 
 /**
  * API No. 9
  * API Name : 폴더에서 채팅 삭제 API
- * [DELETE] /app/delete-chat-folder/{kakaoUserIdx}
+ * [DELETE] /app/delete-folder-folder/{kakaoUserIdx}
  */
-exports.deleteChatFromFolder = async function (req, res) {
+exports.deletefolderFromFolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatIdx, folderIdx
+     * Query String: folderIdx, folderIdx
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatIdx = req.query.chatIdx;
     const folderIdx = req.query.folderIdx;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!chatIdx)
-        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+    if (!folderIdx)
+        return res.send(response(baseResponse.folder_ID_EMPTY));
     if (!folderIdx)
         return res.send(response(baseResponse.FOLDER_ID_EMPTY));
 
-    const deleteChatFolderResponse = await chatService.deleteChatFolder(userIdx, chatIdx, folderIdx);
+    const deletefolderFolderResponse = await folderService.deletefolderFolder(userIdx, folderIdx, folderIdx);
 
-    return res.send(deleteChatFolderResponse);
+    return res.send(deletefolderFolderResponse);
 };
 
 
 /**
  * API No. 10
  * API Name : 채팅목록 차단하기 API
- * [PATCH] /app/block-chat/{kakaoUserIdx}
+ * [PATCH] /app/block-folder/{kakaoUserIdx}
  */
-exports.blockChat = async function (req, res) {
+exports.blockfolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatName
+     * Query String: folderName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatName = req.query.chatName;
+    const folderName = req.query.folderName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!chatName)
-        return res.send(response(baseResponse.CHAT_NAME_EMPTY));
+    if (!folderName)
+        return res.send(response(baseResponse.folder_NAME_EMPTY));
 
-    const blockChatResponse = await chatService.blockChat(userIdx, chatName);
+    const blockfolderResponse = await folderService.blockfolder(userIdx, folderName);
 
-    return res.send(blockChatResponse);
+    return res.send(blockfolderResponse);
 };
 
 
@@ -323,7 +321,7 @@ exports.login = async function (req, res) {
 
     const {email, password} = req.body;
 
-    const signInResponse = await chatService.postSignIn(email, password);
+    const signInResponse = await folderService.postSignIn(email, password);
 
     return res.send(signInResponse);
 };
@@ -331,27 +329,27 @@ exports.login = async function (req, res) {
 /**
  * API No. 5
  * API Name : 회원 정보 수정 API + JWT + Validation
- * [PATCH] /app/chats/:chatId
- * path variable : chatId
+ * [PATCH] /app/folders/:folderId
+ * path variable : folderId
  * body : nickname
  */
-exports.patchchats = async function (req, res) {
+exports.patchfolders = async function (req, res) {
 
-    // jwt - chatId, path variable :chatId
+    // jwt - folderId, path variable :folderId
 
-    const chatIdFromJWT = req.verifiedToken.chatId
+    const folderIdFromJWT = req.verifiedToken.folderId
 
-    const chatId = req.params.chatId;
+    const folderId = req.params.folderId;
     const nickname = req.body.nickname;
 
     // JWT는 이 후 주차에 다룰 내용
-    if (chatIdFromJWT != chatId) {
-        res.send(errResponse(baseResponse.chat_ID_NOT_MATCH));
+    if (folderIdFromJWT != folderId) {
+        res.send(errResponse(baseResponse.folder_ID_NOT_MATCH));
     } else {
-        if (!nickname) return res.send(errResponse(baseResponse.chat_NICKNAME_EMPTY));
+        if (!nickname) return res.send(errResponse(baseResponse.folder_NICKNAME_EMPTY));
 
-        const editchatInfo = await chatService.editchat(chatId, nickname)
-        return res.send(editchatInfo);
+        const editfolderInfo = await folderService.editfolder(folderId, nickname)
+        return res.send(editfolderInfo);
     }
 };
 
@@ -365,7 +363,7 @@ exports.patchchats = async function (req, res) {
  * [GET] /app/auto-login
  */
 exports.check = async function (req, res) {
-    const chatIdResult = req.verifiedToken.chatId;
-    console.log(chatIdResult);
+    const folderIdResult = req.verifiedToken.folderId;
+    console.log(folderIdResult);
     return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };

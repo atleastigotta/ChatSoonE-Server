@@ -3,10 +3,6 @@ const { logger } = require("../../../config/winston");
 
 const chatDao = require("./chatDao");
 
-const baseResponse = require("../../../config/baseResponseStatus");
-const {response} = require("../../../config/response");
-const {errResponse} = require("../../../config/response");
-
 // Provider: Read 비즈니스 로직 처리
 
 exports.retrieveChatList = async function (userIdx) {
@@ -105,6 +101,15 @@ exports.userBlockCheck = async function (userIdx, otherUserIdx, groupName) {
   connection.release();
 
   return userBlockResult;
+};
+
+exports.chatFolderCheck = async function (chatIdx, folderIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const chatCheckResult = await chatDao.selectFolderChat(connection, chatIdx, folderIdx);
+  connection.release();
+  // console.log(chatCheckResult);
+
+  return chatCheckResult;
 };
 
 // exports.postTimeCheck = async function (userIdx, otherUserIdx, groupName, postTime) {
