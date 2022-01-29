@@ -180,9 +180,9 @@ exports.postChat = async function (req, res) {
     if (!nickname)
         return res.send(response(baseResponse.CHAT_OPPONENT_NICKNAME_EMPTY));
     if (!message)
-        return res.send(response(baseResponse.MESSAGE_EMPTY));
+        return res.send(response(baseResponse.CHAT_MESSAGE_EMPTY));
     if (!postTime)
-        return res.send(response(baseResponse.POST_TIME_EMPTY));
+        return res.send(response(baseResponse.CHAT_POST_TIME_EMPTY));
 
     const addChatResponse = await chatService.addChat(userIdx, nickname, groupName, profileImgUrl, message, postTime);
 
@@ -312,6 +312,7 @@ exports.blockChat = async function (req, res) {
 
 
 
+
 // TODO: After 로그인 인증 방법 (JWT)
 /**
  * API No. 4
@@ -354,11 +355,6 @@ exports.patchchats = async function (req, res) {
         return res.send(editchatInfo);
     }
 };
-
-
-
-
-
 
 // JWT 이 후 주차에 다룰 내용
 /** JWT 토큰 검증 API

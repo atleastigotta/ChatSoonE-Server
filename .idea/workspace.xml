@@ -2,26 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="채팅 api 6개 추가">
-      <change afterPath="$PROJECT_DIR$/src/app/Folder/folderController.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/Folder/folderDao.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/Folder/folderProvider.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/Folder/folderService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/baseResponseStatus.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/baseResponseStatus.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/express.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/express.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/.6c1a1f7b9023a40cab0375214d702bb453b1bc33-audit.json" beforeDir="false" afterPath="$PROJECT_DIR$/log/.6c1a1f7b9023a40cab0375214d702bb453b1bc33-audit.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/Chat/chatController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatDao.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatDao.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatProvider.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatRoute.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Uploads/uploadController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Uploads/uploadController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userDao.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userDao.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userProvider.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userRoute.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderDao.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderDao.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderProvider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +64,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -100,7 +89,8 @@
       <workItem from="1643089992049" duration="22429000" />
       <workItem from="1643170226684" duration="7842000" />
       <workItem from="1643272159725" duration="13796000" />
-      <workItem from="1643350319228" duration="22169000" />
+      <workItem from="1643350319228" duration="22309000" />
+      <workItem from="1643452301601" duration="8824000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
