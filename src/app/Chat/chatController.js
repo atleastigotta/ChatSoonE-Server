@@ -115,11 +115,9 @@ exports.deleteChat = async function (req, res) {
 
     if (!chatIdx)
         return res.send(response(baseResponse.CHAT_ID_EMPTY));
-    else {
-        // 해당 채팅 삭제
-        const deleteChatResult = await chatService.deleteChat(userIdx, chatIdx);
-        return res.send(deleteChatResult);
-    }
+
+    const deleteChatResult = await chatService.deleteChat(userIdx, chatIdx);
+    return res.send(deleteChatResult);
 };
 
 /**

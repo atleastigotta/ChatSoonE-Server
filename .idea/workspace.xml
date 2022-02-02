@@ -3,13 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="채팅 api 6개 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/baseResponseStatus.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/baseResponseStatus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/.6c1a1f7b9023a40cab0375214d702bb453b1bc33-audit.json" beforeDir="false" afterPath="$PROJECT_DIR$/log/.6c1a1f7b9023a40cab0375214d702bb453b1bc33-audit.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/Chat/chatController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderDao.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderDao.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderProvider.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +86,8 @@
       <workItem from="1643170226684" duration="7842000" />
       <workItem from="1643272159725" duration="13796000" />
       <workItem from="1643350319228" duration="22309000" />
-      <workItem from="1643452301601" duration="8824000" />
+      <workItem from="1643452301601" duration="17323000" />
+      <workItem from="1643777230799" duration="490000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>

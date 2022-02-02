@@ -44,6 +44,11 @@
             "date": 1643382313818,
             "name": "log/2022-01-29-smart-push.log",
             "hash": "b0b1f35c83702aeb5afdbe461b8d0829"
+        },
+        {
+            "date": 1643475405844,
+            "name": "log/2022-01-30-smart-push.log",
+            "hash": "2c72a0b25b4fd2ac53c187d56d97bda7"
         }
     ]
 }

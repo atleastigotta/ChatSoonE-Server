@@ -19,9 +19,9 @@ exports.deleteChat = async function (userIdx, chatIdx) {
         if (chatRows.length <= 0)
             return errResponse(baseResponse.CHAT_NOT_EXISTS);
         // 해당 채팅이 이미 삭제되었는가
-        const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
-        if (chatDeleteRows.length > 0)
-            return errResponse(baseResponse.CHAT_ALREADY_DELETED);
+        // const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
+        // if (chatDeleteRows.length > 0)
+        //     return errResponse(baseResponse.CHAT_ALREADY_DELETED);
 
         const connection = await pool.getConnection(async (conn) => conn);
         const deleteChatResult = await chatDao.deleteChat(connection, chatIdx);
