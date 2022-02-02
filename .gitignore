@@ -12,8 +12,8 @@ config/kakaoOauth.js
 config/database.js
 config/secret.js
 
-# unneccessary
-#package-lock.json
+# unneccessary (security issue)
+package-lock.json
 
 # Logs
 logs
