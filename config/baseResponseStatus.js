@@ -35,8 +35,9 @@ module.exports = {
 
     // Response error (3000번대)
     // 사람 (3100~3199)
-    OPPONENT_NOT_EXISTS : { "isSuccess": false, "code": 3100, "message":"해당 상대가 존재하지 않습니다." },
-    GROUP_NOT_EXISTS : { "isSuccess": false, "code": 3101, "message":"해당 단톡방이 존재하지 않습니다." },
+    USER_ALREADY_EXISTS : { "isSuccess": false, "code": 3100, "message":"해당 회원이 이미 존재합니다." },
+    OPPONENT_NOT_EXISTS : { "isSuccess": false, "code": 3101, "message":"해당 상대가 존재하지 않습니다." },
+    GROUP_NOT_EXISTS : { "isSuccess": false, "code": 3102, "message":"해당 단톡방이 존재하지 않습니다." },
 
     // 채팅 (3200~3299)
     CHAT_NOT_EXISTS : { "isSuccess": false, "code": 3200, "message":"해당 채팅이 존재하지 않습니다." },

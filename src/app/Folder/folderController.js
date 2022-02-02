@@ -1,5 +1,5 @@
-const folderProvider = require("../../app/folder/folderProvider");
-const folderService = require("../../app/folder/folderService");
+const folderProvider = require("./folderProvider");
+const folderService = require("./folderService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 

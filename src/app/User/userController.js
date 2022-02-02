@@ -1,6 +1,6 @@
 const jwtMiddleware = require("../../../config/jwtMiddleware");
-const userProvider = require("../../app/User/userProvider");
-const userService = require("../../app/User/userService");
+const userProvider = require("./userProvider");
+const userService = require("./userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const passport = require('passport');
@@ -24,6 +24,30 @@ passport.use('kakao-login', new KakaoStrategy({
     console.log(profile);
 }))
 
+
+/**
+ * API No. 1
+ * API Name : 카카오 유저 추가 API
+ * [GET] /app/add-user
+ */
+exports.postUser = async function (req, res) {
+    /**
+     * Path Variable:
+     * Query String:
+     * Header:
+     * Body: kakaoUserIdx
+     */
+    const userIdx = req.body.kakaoUserIdx;
+
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
+
+    const addUserResponse = await userService.postUser(userIdx);
+
+    return res.send(addUserResponse);
+}
 
 
 

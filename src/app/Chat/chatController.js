@@ -1,5 +1,5 @@
-const chatProvider = require("../../app/chat/chatProvider");
-const chatService = require("../../app/chat/chatService");
+const chatProvider = require("./chatProvider");
+const chatService = require("./chatService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 

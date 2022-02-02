@@ -76,6 +76,7 @@ exports.deleteFolder = async function (userIdx, folderIdx) {
 
         // 폴더 안의 채팅 모두 폴더에서 제거 + 폴더 삭제
         const connection = await pool.getConnection(async (conn) => conn);
+        const deleteFolderChatResult = await folderDao.deleteFolderChat(connection, folderIdx);
         const deleteFolderResult = await folderDao.deleteFolder(connection, folderIdx);
         connection.release();
 

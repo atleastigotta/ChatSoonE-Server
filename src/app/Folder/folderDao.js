@@ -80,18 +80,23 @@ async function changeFolderIcon(connection, userIdx, folderIdx, folderImg) {
   return changeFolderIconRows;
 }
 
+// 폴더 안의 채팅 삭제하기
+async function deleteFolderChat(connection, folderIdx) {
+    const deleteFolderChatQuery = `
+        DELETE FROM FolderContent
+        WHERE folderIdx = ?;
+        `;
+    const [deleteFolderChatRows] = await connection.query(deleteFolderChatQuery, folderIdx);
+    return deleteFolderChatRows;
+}
+
 // 폴더 삭제하기
 async function deleteFolder(connection, folderIdx) {
     const deleteFolderQuery = `
-        DELETE FROM FolderContent
-        WHERE folderIdx = ?;
-        `
-        +
-        `
         DELETE FROM FolderInfo
         WHERE folderIdx = ?;
         `;
-    const [deleteFolderRows] = await connection.query(deleteFolderQuery, [folderIdx, folderIdx]);
+    const [deleteFolderRows] = await connection.query(deleteFolderQuery, folderIdx);
     return deleteFolderRows;
 }
 
@@ -136,6 +141,7 @@ module.exports = {
     selectUnhiddenFolder,
     changeFolderName,
     changeFolderIcon,
+    deleteFolderChat,
     deleteFolder,
     selectHiddenFolderList,
     hideFolder,

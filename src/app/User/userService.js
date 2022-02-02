@@ -14,6 +14,24 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
+exports.postUser = async function (userIdx) {
+    try {
+        // --논리 체크--
+        // 이미 존재하는 카카오 회원인가
+        const userRows = await userProvider.userCheck(userIdx);
+        if (userRows.length > 0)
+            return errResponse(baseResponse.USER_ALREADY_EXISTS);
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const addUserResult = await userDao.addUser(connection, userIdx);
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+    } catch (err) {
+        logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
 
 // After 로그인 인증 방법 (JWT)
 // exports.postSignIn = async function (email, password) {
