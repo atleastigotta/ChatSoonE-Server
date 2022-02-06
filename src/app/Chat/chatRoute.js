@@ -28,8 +28,12 @@ module.exports = function(app){
     // 9. 폴더에서 채팅 삭제 API
     app.delete('/app/delete-chat-folder/:kakaoUserIdx', chat.deleteChatFromFolder);
 
-    // 채팅목록 차단하기
-    // app.patch('/app/block-chat/:kakaoUserIdx', chat.blockChat);
-    // 차단 해제하기
-    // 차단 된 사용자 목록 보기
+    // 10. 톡방(채팅/회원) 차단하기
+    app.patch('/app/block-chat/:kakaoUserIdx', chat.blockChat);
+    
+    // 11. 톡방 차단 해제하기
+    app.patch('/app/unblock-chat/:kakaoUserIdx', chat.unblockChat);
+
+    // 12. 차단 된 톡방 목록 가져오기
+    app.get('/app/blocked-chatlist/:kakaoUserIdx', chat.getBlockedChatlist);
 };

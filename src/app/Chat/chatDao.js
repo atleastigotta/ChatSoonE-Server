@@ -159,6 +159,28 @@ async function selectBlockedChat(connection, userIdx, groupName) {
   return selectBlockedChatRow;
 }
 
+// 차단 해제된 갠톡 체크
+async function selectUnblockedUser(connection, userIdx, otherUserIdx) {
+  const selectUnblockedUserQuery = `
+        SELECT *
+        FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
+        WHERE OU.kakaoUserIdx = ? AND C.otherUserIdx = ? AND C.groupName is null AND C.status = 'ACTIVE';
+        `;
+  const [selectUnblockedUserRow] = await connection.query(selectUnblockedUserQuery, [userIdx, otherUserIdx]);
+  return selectUnblockedUserRow;
+}
+
+// 차단 해제된 단톡 체크
+async function selectUnblockedChat(connection, userIdx, groupName) {
+  const selectUnblockedChatQuery = `
+        SELECT *
+        FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
+        WHERE OU.kakaoUserIdx = ? AND C.groupName = ? AND C.status = 'ACTIVE';
+        `;
+  const [selectUnblockedChatRow] = await connection.query(selectUnblockedChatQuery, [userIdx, groupName]);
+  return selectUnblockedChatRow;
+}
+
 // 채팅 삭제
 async function deleteChat(connection, chatIdx) {
   const deleteChatQuery = `
@@ -274,6 +296,90 @@ async function removeChatFromFolder(connection, chatIdx, folderIdx) {
   return removeChatFromFolderRow;
 }
 
+// 갠톡 채팅 차단하기
+async function blockChat(connection, otherUserIdx) {
+    const blockChatQuery = `
+            UPDATE Chat
+            SET status = 'BLOCKED'
+            WHERE otherUserIdx = ? and groupName is null;
+            `;
+    const blockChatRow = await connection.query(blockChatQuery, otherUserIdx);
+
+    return blockChatRow;
+}
+
+// 갠톡 유저 차단하기
+async function blockUser(connection, otherUserIdx) {
+    const blockUserQuery = `
+            UPDATE OtherUser
+            SET status = 'BLOCKED'
+            WHERE otherUserIdx = ?
+            `;
+    const blockUserRow = await connection.query(blockUserQuery, otherUserIdx);
+
+    return blockUserRow;
+}
+
+// 단톡 채팅 차단하기
+async function blockGroupChat(connection, userIdx, groupName) {
+    const blockGroupChatQuery = `
+            UPDATE Chat
+            SET status = 'BLOCKED'
+            WHERE  groupName = ?
+              AND otherUserIdx IN (SELECT otherUserIdx FROM OtherUser WHERE kakaoUserIdx = ?);
+            `;
+    const blockGroupChatRow = await connection.query(blockGroupChatQuery, [groupName, userIdx]);
+
+    return blockGroupChatRow;
+}
+
+// 갠톡 채팅 차단 해제하기
+async function unblockChat(connection, otherUserIdx) {
+    const unblockChatQuery = `
+            UPDATE Chat
+            SET status = 'ACTIVE'
+            WHERE otherUserIdx = ? and groupName is null;
+            `;
+    const unblockChatRow = await connection.query(unblockChatQuery, otherUserIdx);
+
+    return unblockChatRow;
+}
+
+// 갠톡 유저 차단 해제하기
+async function unblockUser(connection, otherUserIdx) {
+    const unblockUserQuery = `
+            UPDATE OtherUser
+            SET status = 'ACTIVE'
+            WHERE otherUserIdx = ?
+            `;
+    const unblockUserRow = await connection.query(unblockUserQuery, otherUserIdx);
+
+    return unblockUserRow;
+}
+
+// 단톡 채팅 차단 해제하기
+async function unblockGroupChat(connection, userIdx, groupName) {
+    const unblockGroupChatQuery = `
+            UPDATE Chat
+            SET status = 'ACTIVE'
+            WHERE  groupName = ?
+              AND otherUserIdx IN (SELECT otherUserIdx FROM OtherUser WHERE kakaoUserIdx = ?);
+            `;
+    const unblockGroupChatRow = await connection.query(unblockGroupChatQuery, [groupName, userIdx]);
+
+    return unblockGroupChatRow;
+}
+
+// 차단된 톡방목록 조회
+async function selectBlockedChatList(connection, kakaoUserIdx) {
+    const selectBlockedChatListQuery = `
+            SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS blocked_chatlist
+            FROM OtherUser OU INNER JOIN Chat C on OU.otherUserIdx = C.otherUserIdx
+            WHERE OU.kakaoUserIdx = ? AND (OU.status = 'BLOCKED' OR C.status = 'BLOCKED');
+            `;
+    const [blockedChatListRows] = await connection.query(selectBlockedChatListQuery, kakaoUserIdx);
+    return blockedChatListRows;
+}
 
 module.exports = {
     selectChatList,
@@ -297,5 +403,13 @@ module.exports = {
     putChatsToFolder,
     putGroupChatsToFolder,
     removeChatFromFolder,
-
+    blockChat,
+    blockUser,
+    blockGroupChat,
+    selectUnblockedUser,
+    selectUnblockedChat,
+    unblockChat,
+    unblockUser,
+    unblockGroupChat,
+    selectBlockedChatList,
 };

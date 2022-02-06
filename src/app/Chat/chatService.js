@@ -85,7 +85,7 @@ exports.addChat = async function (userIdx, nickname, groupName, profileImgUrl, m
             // console.log(otherUserIdx);
 
             // Block(차단)된 채팅인가
-            const userBlockRows = await chatProvider.userBlockCheck(userIdx, otherUserIdx, groupName);
+            const userBlockRows = await chatProvider.blockCheck(userIdx, otherUserIdx, groupName);
             if (userBlockRows.length > 0) {
                 console.log('차단된 메시지이므로 추가되지 않습니다.');
                 return '차단된 톡방이므로 채팅을 추가하지 않습니다.';
@@ -213,25 +213,60 @@ exports.deleteChatFolder = async function (userIdx, chatIdx, folderIdx) {
     }
 };
 
-// exports.blockChat = async function (userIdx, chatName) {
-//     try {
-//         // --논리 체크--
-//         // 해당 채팅이 존재하는가 (이미 블락되지는 않았는가) -> 있다면 otherUserIdx / groupName 가져오기
-//         const chatRows = await chatProvider.chatInfoCheck(userIdx, chatName);
-//         if (chatRows.length <= 0)
-//             return errResponse(baseResponse.CHAT_NOT_EXISTS);
-//         // 해당 채팅이 이미 삭제되었는가
-//         const chatDeleteRows = await chatProvider.chatDeleteCheck(chatIdx);
-//         if (chatDeleteRows.length > 0)
-//             return errResponse(baseResponse.CHAT_ALREADY_DELETED);
-//
-//         const connection = await pool.getConnection(async (conn) => conn);
-//         const deleteChatResult = await chatDao.deleteChat(connection, chatIdx);
-//         connection.release();
-//
-//         return response(baseResponse.SUCCESS);
-//     } catch (err) {
-//         logger.error(`App - createchat Service error\n: ${err.message}`);
-//         return errResponse(baseResponse.DB_ERROR);
-//     }
-// };
+exports.blockChat = async function (userIdx, otherUserIdx, groupName) {
+    try {
+        // --논리 체크--
+        // 이미 Block(차단)된 채팅인가
+        const blockedRows = await chatProvider.blockCheck(userIdx, otherUserIdx, groupName);
+        if (blockedRows.length > 0) {
+            return errResponse(baseResponse.CHATLIST_ALREADY_BLOCKED);
+        }
+        // 갠톡인 경우
+        if (otherUserIdx && !groupName) {
+            const connection = await pool.getConnection(async (conn) => conn);
+            const blockChatResult = await chatDao.blockChat(connection, otherUserIdx);
+            const blockUserResult = await chatDao.blockUser(connection, otherUserIdx);
+            connection.release();
+        }
+        // 단톡인 경우
+        else if (!otherUserIdx && groupName) {
+            const connection = await pool.getConnection(async (conn) => conn);
+            const blockGroupChatResult = await chatDao.blockGroupChat(connection, userIdx, groupName);
+            connection.release();
+        }
+
+        return response(baseResponse.SUCCESS);
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.unblockChat = async function (userIdx, otherUserIdx, groupName) {
+    try {
+        // --논리 체크--
+        // 이미 Unblock(차단 해제)된 채팅인가
+        const unblockedRows = await chatProvider.unblockCheck(userIdx, otherUserIdx, groupName);
+        if (unblockedRows.length > 0) {
+            return errResponse(baseResponse.CHATLIST_ALREADY_UNBLOCKED);
+        }
+        // 갠톡인 경우
+        if (otherUserIdx && !groupName) {
+            const connection = await pool.getConnection(async (conn) => conn);
+            const unblockChatResult = await chatDao.unblockChat(connection, otherUserIdx);
+            const unblockUserResult = await chatDao.unblockUser(connection, otherUserIdx);
+            connection.release();
+        }
+        // 단톡인 경우
+        else if (!otherUserIdx && groupName) {
+            const connection = await pool.getConnection(async (conn) => conn);
+            const unblockGroupChatResult = await chatDao.unblockGroupChat(connection, userIdx, groupName);
+            connection.release();
+        }
+
+        return response(baseResponse.SUCCESS);
+    } catch (err) {
+        logger.error(`App - createchat Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};

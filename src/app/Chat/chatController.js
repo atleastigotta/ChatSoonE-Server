@@ -283,83 +283,84 @@ exports.deleteChatFromFolder = async function (req, res) {
 
 /**
  * API No. 10
- * API Name : 채팅목록 차단하기 API
+ * API Name : 톡방(채팅/회원) 차단하기 API
  * [PATCH] /app/block-chat/{kakaoUserIdx}
  */
 exports.blockChat = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatName
+     * Query String: otherUserIdx, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatName = req.query.chatName;
+    const otherUserIdx = req.query.otherUserIdx;
+    const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!chatName)
-        return res.send(response(baseResponse.CHAT_NAME_EMPTY));
+    if (!otherUserIdx && !groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+    else if (otherUserIdx && groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
 
-    const blockChatResponse = await chatService.blockChat(userIdx, chatName);
+    const blockChatResponse = await chatService.blockChat(userIdx, otherUserIdx, groupName);
 
     return res.send(blockChatResponse);
 };
 
-
-
-
-// TODO: After 로그인 인증 방법 (JWT)
 /**
- * API No. 4
- * API Name : 로그인 API
- * [POST] /app/login
- * body : email, passsword
+ * API No. 11
+ * API Name : 톡방 차단 해제하기 API
+ * [PATCH] /app/unblock-chat/{kakaoUserIdx}
  */
-exports.login = async function (req, res) {
+exports.unblockChat = async function (req, res) {
+    /**
+     * Path Variable: kakaoUserIdx
+     * Query String: otherUserIdx, groupName
+     * Header:
+     * Body:
+     */
+    const userIdx = req.params.kakaoUserIdx;
+    const otherUserIdx = req.query.otherUserIdx;
+    const groupName = req.query.groupName;
 
-    const {email, password} = req.body;
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
+    if (!otherUserIdx && !groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+    else if (otherUserIdx && groupName)
+        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
 
-    const signInResponse = await chatService.postSignIn(email, password);
+    const unblockChatResponse = await chatService.unblockChat(userIdx, otherUserIdx, groupName);
 
-    return res.send(signInResponse);
+    return res.send(unblockChatResponse);
 };
 
 /**
- * API No. 5
- * API Name : 회원 정보 수정 API + JWT + Validation
- * [PATCH] /app/chats/:chatId
- * path variable : chatId
- * body : nickname
+ * API No. 12
+ * API Name : 차단 된 톡방 목록 가져오기 API
+ * [GET] /app/blocked-chatlist/:kakaoUserIdx
  */
-exports.patchchats = async function (req, res) {
+exports.getBlockedChatlist = async function (req, res) {
+    /**
+     * Path Variable: kakaoUserIdx
+     * Query String:
+     * Header:
+     * Body:
+     */
+    const userIdx = req.params.kakaoUserIdx;
 
-    // jwt - chatId, path variable :chatId
+    // --형식 체크--
+    // 빈 값 체크
+    if (!userIdx)
+        return res.send(response(baseResponse.USER_ID_EMPTY));
 
-    const chatIdFromJWT = req.verifiedToken.chatId
+    const blockedChatListResponse = await chatProvider.retrieveBlockedChatList(userIdx);
 
-    const chatId = req.params.chatId;
-    const nickname = req.body.nickname;
-
-    // JWT는 이 후 주차에 다룰 내용
-    if (chatIdFromJWT != chatId) {
-        res.send(errResponse(baseResponse.chat_ID_NOT_MATCH));
-    } else {
-        if (!nickname) return res.send(errResponse(baseResponse.chat_NICKNAME_EMPTY));
-
-        const editchatInfo = await chatService.editchat(chatId, nickname)
-        return res.send(editchatInfo);
-    }
-};
-
-// JWT 이 후 주차에 다룰 내용
-/** JWT 토큰 검증 API
- * [GET] /app/auto-login
- */
-exports.check = async function (req, res) {
-    const chatIdResult = req.verifiedToken.chatId;
-    console.log(chatIdResult);
-    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+    return res.send(response(baseResponse.SUCCESS, blockedChatListResponse));
 };

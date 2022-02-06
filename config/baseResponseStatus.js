@@ -47,6 +47,7 @@ module.exports = {
     CHAT_POST_TIME_WRONG : { "isSuccess": false, "code": 3205, "message":"전송시간이 잘못 되었습니다." },
     CHAT_NOT_EXISTS_IN_FOLDER : { "isSuccess": false, "code": 3206, "message":"해당 채팅이 해당 폴더에 존재하지 않습니다." },
     CHAT_ALREADY_EXISTS_IN_FOLDER : { "isSuccess": false, "code": 3207, "message":"해당 채팅이 이미 해당 폴더에 있습니다." },
+    CHATLIST_ALREADY_UNBLOCKED : { "isSuccess": false, "code": 3208, "message":"해당 톡방이 이미 차단 해제되어 있습니다." },
 
     // 폴더 (3300~3399)
     FOLDER_NOT_EXISTS : { "isSuccess": false, "code": 3300, "message":"해당 폴더가 존재하지 않습니다." },

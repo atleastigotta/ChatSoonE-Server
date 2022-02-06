@@ -89,18 +89,32 @@ exports.newUserCheck = async function (userIdx, nickname) {
   return newUserCheckResult;
 };
 
-exports.userBlockCheck = async function (userIdx, otherUserIdx, groupName) {
+exports.blockCheck = async function (userIdx, otherUserIdx, groupName) {
   const connection = await pool.getConnection(async (conn) => conn);
-  let userBlockResult;
+  let blockResult;
   if(!groupName)
     // 갠톡일 경우
-    userBlockResult = await chatDao.selectBlockedUser(connection, userIdx, otherUserIdx);
+    blockResult = await chatDao.selectBlockedUser(connection, userIdx, otherUserIdx);
   else
     // 단톡일 경우
-    userBlockResult = await chatDao.selectBlockedChat(connection, userIdx, groupName);
+    blockResult = await chatDao.selectBlockedChat(connection, userIdx, groupName);
   connection.release();
 
-  return userBlockResult;
+  return blockResult;
+};
+
+exports.unblockCheck = async function (userIdx, otherUserIdx, groupName) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  let unblockResult;
+  if(!groupName)
+    // 갠톡일 경우
+    unblockResult = await chatDao.selectUnblockedUser(connection, userIdx, otherUserIdx);
+  else
+    // 단톡일 경우
+    unblockResult = await chatDao.selectUnblockedChat(connection, userIdx, groupName);
+  connection.release();
+
+  return unblockResult;
 };
 
 exports.chatFolderCheck = async function (chatIdx, folderIdx) {
@@ -110,6 +124,17 @@ exports.chatFolderCheck = async function (chatIdx, folderIdx) {
   // console.log(chatCheckResult);
 
   return chatCheckResult;
+};
+
+exports.retrieveBlockedChatList = async function (userIdx) {
+  // connection 은 db와의 연결을 도와줌
+  const connection = await pool.getConnection(async (conn) => conn);
+  // Dao 쿼리문의 결과를 호출
+  const blockedChatListResult = await chatDao.selectBlockedChatList(connection, userIdx);
+  // connection 해제
+  connection.release();
+
+  return blockedChatListResult;
 };
 
 // exports.postTimeCheck = async function (userIdx, otherUserIdx, groupName, postTime) {
