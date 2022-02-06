@@ -15,7 +15,7 @@ module.exports = function(app){
     }), (req, res) => {res.redirect('/');});
 
     // 1. 카카오 회원 추가
-    app.post('/app/add-user', user.postUser);
+    app.post('/app/users/user', user.postUser);
 
     // After 로그인 인증 방법 (JWT)
     // 로그인 하기 API (JWT 생성)

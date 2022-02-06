@@ -6,7 +6,7 @@ const {response, errResponse} = require("../../../config/response");
 /**
  * API No. 1
  * API Name : 전체 폴더목록 가져오기 (숨김폴더 제외) API
- * [GET] /app/folderlist/{kakaoUserIdx}
+ * [GET] /app/folders/{kakaoUserIdx}/folderlist
  */
 exports.getFolderList = async function (req, res) {
     /**
@@ -30,7 +30,7 @@ exports.getFolderList = async function (req, res) {
 /**
  * API No. 2
  * API Name : 폴더 생성하기 API
- * [POST] /app/add-folder/{kakaoUserIdx}
+ * [POST] /app/folders/{kakaoUserIdx}/folder
  */
 exports.postFolder = async function (req, res) {
     /**
@@ -53,7 +53,7 @@ exports.postFolder = async function (req, res) {
 /**
  * API No. 3
  * API Name : 폴더 이름 바꾸기 API
- * [PATCH] /app/folder-change-name/{kakaoUserIdx}
+ * [PATCH] /app/folders/{kakaoUserIdx}/name
  */
 exports.patchFolderName = async function (req, res) {
     /**
@@ -82,7 +82,7 @@ exports.patchFolderName = async function (req, res) {
 /**
  * API No. 4
  * API Name : 폴더 아이콘 바꾸기 API
- * [PATCH] /app/folder-change-icon/{kakaoUserIdx}
+ * [PATCH] /app/folders/{kakaoUserIdx}/icon
  */
 exports.patchFolderIcon = async function (req, res) {
     /**
@@ -111,7 +111,7 @@ exports.patchFolderIcon = async function (req, res) {
 /**
  * API No. 5
  * API Name : 폴더 삭제하기 API
- * [DELETE] /app/delete-folder/{kakaoUserIdx}
+ * [DELETE] /app/folders/{kakaoUserIdx}/folder
  */
 exports.deleteFolder = async function (req, res) {
     /**
@@ -137,7 +137,7 @@ exports.deleteFolder = async function (req, res) {
 /**
  * API No. 6
  * API Name : 숨김 폴더목록 가져오기 API
- * [GET] /app/folderlist-hidden/{kakaoUserIdx}
+ * [GET] /app/folders/{kakaoUserIdx}/hidden-folderlist
  */
 exports.getHiddenFolderList = async function (req, res) {
     /**
@@ -161,7 +161,7 @@ exports.getHiddenFolderList = async function (req, res) {
 /**
  * API No. 7
  * API Name : 폴더 숨기기 API
- * [DELETE] /app/hide-folder/{kakaoUserIdx}
+ * [DELETE] /app/folders/{kakaoUserIdx}/hide
  */
 exports.patchHideFolder = async function (req, res) {
     /**
@@ -187,7 +187,7 @@ exports.patchHideFolder = async function (req, res) {
 /**
  * API No. 8
  * API Name : 숨김 폴더 다시 해제하기 API
- * [DELETE] /app/unhide-folder/{kakaoUserIdx}
+ * [DELETE] /app/folders/{kakaoUserIdx}/unhide
  */
 exports.patchUnhideFolder = async function (req, res) {
     /**

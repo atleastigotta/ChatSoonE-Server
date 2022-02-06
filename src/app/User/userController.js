@@ -28,7 +28,7 @@ passport.use('kakao-login', new KakaoStrategy({
 /**
  * API No. 1
  * API Name : 카카오 유저 추가 API
- * [GET] /app/add-user
+ * [POST] /app/users/user
  */
 exports.postUser = async function (req, res) {
     /**

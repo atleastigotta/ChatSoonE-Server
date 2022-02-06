@@ -6,7 +6,7 @@ const {response, errResponse} = require("../../../config/response");
 /**
  * API No. 1
  * API Name : 전체 채팅목록 가져오기 (메인 화면) API
- * [GET] /app/chatlist/{kakaoUserIdx}
+ * [GET] /app/chats/{kakaoUserIdx}/chatlist
  */
 exports.getChatList = async function (req, res) {
     /**
@@ -31,7 +31,7 @@ exports.getChatList = async function (req, res) {
 /**
  * API No. 2
  * API Name : 갠톡 or 단톡의 채팅 가져오기 API
- * [GET] /app/chat/{kakaoUserIdx}
+ * [GET] /app/chats/{kakaoUserIdx}/chats
  */
 exports.getChats = async function (req, res) {
     /**
@@ -67,7 +67,7 @@ exports.getChats = async function (req, res) {
 /**
  * API No. 3
  * API Name : 폴더의 채팅 가져오기 API
- * [GET] /app/chat-folder/{kakaoUserIdx}
+ * [GET] /app/chats/{kakaoUserIdx}/folder-chats
  */
 exports.getFolderChats = async function (req, res) {
     /**
@@ -96,7 +96,7 @@ exports.getFolderChats = async function (req, res) {
 /**
  * API No. 4
  * API Name : 선택한 채팅 삭제하기 API
- * [DELETE] /app/delete-chat/{kakaoUserIdx}
+ * [DELETE] /app/chats/{kakaoUserIdx}/chat
  */
 exports.deleteChat = async function (req, res) {
     /**
@@ -123,7 +123,7 @@ exports.deleteChat = async function (req, res) {
 /**
  * API No. 5
  * API Name : 선택한 채팅목록의 모든 채팅 삭제하기 API
- * [DELETE] /app/deleteAll-chat/{kakaoUserIdx}
+ * [DELETE] /app/chats/{kakaoUserIdx}/chats
  */
 exports.deleteAllChat = async function (req, res) {
     /**
@@ -159,7 +159,7 @@ exports.deleteAllChat = async function (req, res) {
 /**
  * API No. 6
  * API Name : 채팅 추가하기 API
- * [POST] /app/add-chat/{kakaoUserIdx}
+ * [POST] /app/chats/{kakaoUserIdx}/chat
  */
 exports.postChat = async function (req, res) {
     /**
@@ -190,7 +190,7 @@ exports.postChat = async function (req, res) {
 /**
  * API No. 7
  * API Name : 폴더에 채팅 추가하기 API
- * [POST] /app/add-chat-folder/{kakaoUserIdx}
+ * [POST] /app/chats/{kakaoUserIdx}/folder-chat
  */
 exports.addChatToFolder = async function (req, res) {
     /**
@@ -220,7 +220,7 @@ exports.addChatToFolder = async function (req, res) {
 /**
  * API No. 8
  * API Name : 폴더에 채팅목록 추가하기 API
- * [POST] /app/add-chats-folder/{kakaoUserIdx}
+ * [POST] /app/chats/{kakaoUserIdx}/folder-chats
  */
 exports.addChatsToFolder = async function (req, res) {
     /**
@@ -253,7 +253,7 @@ exports.addChatsToFolder = async function (req, res) {
 /**
  * API No. 9
  * API Name : 폴더에서 채팅 삭제 API
- * [DELETE] /app/delete-chat-folder/{kakaoUserIdx}
+ * [DELETE] /app/chats/{kakaoUserIdx}/folder-chat
  */
 exports.deleteChatFromFolder = async function (req, res) {
     /**
@@ -284,7 +284,7 @@ exports.deleteChatFromFolder = async function (req, res) {
 /**
  * API No. 10
  * API Name : 톡방(채팅/회원) 차단하기 API
- * [PATCH] /app/block-chat/{kakaoUserIdx}
+ * [PATCH] /app/chats/{kakaoUserIdx}/block
  */
 exports.blockChat = async function (req, res) {
     /**
@@ -314,7 +314,7 @@ exports.blockChat = async function (req, res) {
 /**
  * API No. 11
  * API Name : 톡방 차단 해제하기 API
- * [PATCH] /app/unblock-chat/{kakaoUserIdx}
+ * [PATCH] /app/chats/{kakaoUserIdx}/unblock
  */
 exports.unblockChat = async function (req, res) {
     /**
@@ -344,7 +344,7 @@ exports.unblockChat = async function (req, res) {
 /**
  * API No. 12
  * API Name : 차단 된 톡방 목록 가져오기 API
- * [GET] /app/blocked-chatlist/:kakaoUserIdx
+ * [GET] /app/chats/{kakaoUserIdx}/blocked-chatlist
  */
 exports.getBlockedChatlist = async function (req, res) {
     /**
