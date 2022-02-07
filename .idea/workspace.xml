@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="서버 reopen">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="서버 reopen" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -91,7 +89,7 @@
       <workItem from="1644207925533" duration="1689000" />
       <workItem from="1644221704768" duration="19000" />
       <workItem from="1644236295932" duration="5253000" />
-      <workItem from="1644241690524" duration="3741000" />
+      <workItem from="1644241690524" duration="4190000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
