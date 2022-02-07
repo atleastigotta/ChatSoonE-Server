@@ -57,6 +57,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.tabs" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="RecentsManager">
@@ -89,7 +90,8 @@
       <workItem from="1644144314546" duration="10772000" />
       <workItem from="1644207925533" duration="1689000" />
       <workItem from="1644221704768" duration="19000" />
-      <workItem from="1644236295932" duration="308000" />
+      <workItem from="1644236295932" duration="5253000" />
+      <workItem from="1644241690524" duration="3741000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
