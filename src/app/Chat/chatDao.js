@@ -3,7 +3,7 @@
 // 모든 채팅목록 조회
 async function selectChatList(connection, kakaoUserIdx) {
   const selectChatListQuery = `
-          SELECT CL.chatName AS chat_name, CL.profileImg AS profile_image, CL.latestTime AS latest_time, CM.message AS latest_message
+          SELECT CM.chatIdx, CL.chatName AS chat_name, CL.profileImg AS profile_image, CL.latestTime AS latest_time, CM.message AS latest_message
           FROM
               (SELECT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName,
                       (CASE WHEN C.groupName is null THEN OU.profileImgUrl ELSE null END) AS profileImg,
@@ -12,7 +12,7 @@ async function selectChatList(connection, kakaoUserIdx) {
                WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED'
                GROUP BY chatName, profileImg) CL
                   INNER JOIN
-              (SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName, C.message, C.postTime
+              (SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName, C.chatIdx, C.message, C.postTime
                FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
                WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED') CM
               ON CL.chatName = CM.chatName AND CL.latestTime = CM.postTime

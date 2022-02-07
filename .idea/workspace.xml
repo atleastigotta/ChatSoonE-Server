@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="채팅 api 6개 추가">
+    <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="서버 reopen">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +87,9 @@
       <workItem from="1643777230799" duration="14172000" />
       <workItem from="1643884517976" duration="7429000" />
       <workItem from="1644144314546" duration="10772000" />
-      <workItem from="1644207925533" duration="156000" />
+      <workItem from="1644207925533" duration="1689000" />
+      <workItem from="1644221704768" duration="19000" />
+      <workItem from="1644236295932" duration="308000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
@@ -117,7 +119,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643121383777</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="서버 reopen">
+      <created>1644208165644</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1644208165644</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,6 +160,7 @@
     <MESSAGE value="브랜치 테스트 (임시파일 삭제)" />
     <MESSAGE value="서버 개발 환경 구축 (템플릿 추가)" />
     <MESSAGE value="채팅 api 6개 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="채팅 api 6개 추가" />
+    <MESSAGE value="서버 reopen" />
+    <option name="LAST_COMMIT_MESSAGE" value="서버 reopen" />
   </component>
 </project>
