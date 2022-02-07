@@ -3,12 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="채팅 api 6개 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Chat/chatRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Chat/chatRoute.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Folder/folderRoute.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/User/userRoute.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/User/userRoute.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +86,8 @@
       <workItem from="1643452301601" duration="17323000" />
       <workItem from="1643777230799" duration="14172000" />
       <workItem from="1643884517976" duration="7429000" />
-      <workItem from="1644144314546" duration="9023000" />
+      <workItem from="1644144314546" duration="10772000" />
+      <workItem from="1644207925533" duration="156000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>

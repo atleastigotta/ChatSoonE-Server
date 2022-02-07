@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="f0f0223e-ed2b-4d3a-addf-53c2a0a64521" name="chatsoone-server" url="http://52.79.249.194">
-        <fileTransfer rootFolder="/var/www/ChatSoonE-Server" accessType="SFTP" host="52.79.249.194" port="22" sshConfigId="56610785-24b9-4ae7-98ee-bd4b5382973e" sshConfig="ubuntu@52.79.249.194:22 key" keyPair="true">
+      <webServer id="f0f0223e-ed2b-4d3a-addf-53c2a0a64521" name="chatsoone-server" url="http://3.37.76.21">
+        <fileTransfer rootFolder="/var/www/ChatSoonE-Server" accessType="SFTP" host="3.37.76.21" port="22" sshConfigId="56610785-24b9-4ae7-98ee-bd4b5382973e" sshConfig="ubuntu@3.37.76.21:22 key" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
