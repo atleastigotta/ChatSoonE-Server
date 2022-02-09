@@ -20,7 +20,7 @@ exports.getChatList = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
 
     const chatListResponse = await chatProvider.retrieveChatList(userIdx);
 
@@ -36,30 +36,28 @@ exports.getChatList = async function (req, res) {
 exports.getChats = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: otherUserIdx, groupName
+     * Query String: chatIdx, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const otherUserIdx = req.query.otherUserIdx;
+    const chatIdx = req.query.chatIdx;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
-    else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
+    if (!chatIdx)
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
 
-    if (otherUserIdx && !groupName) {
+    if (!groupName) {
         // 갠톡 채팅 내용 조회
-        const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, otherUserIdx);
+        const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, chatIdx);
         return res.send(response(baseResponse.SUCCESS, personalChatListResult));
-    } else if (!otherUserIdx && groupName) {
+    } else {
         // 단톡 채팅 내용 조회
-        const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, groupName);
+        const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, chatIdx);
         return res.send(response(baseResponse.SUCCESS, groupChatListResult));
     }
 };
@@ -82,10 +80,10 @@ exports.getFolderChats = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
 
     if (!folderIdx)
-        return res.send(response(baseResponse.FOLDER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.FOLDER_ID_EMPTY));
     else {
         // 해당 폴더의 채팅 내용 조회
         const folderChatListResult = await chatProvider.retrieveFolderChats(userIdx, folderIdx);
@@ -111,10 +109,10 @@ exports.deleteChat = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
 
     if (!chatIdx)
-        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
 
     const deleteChatResult = await chatService.deleteChat(userIdx, chatIdx);
     return res.send(deleteChatResult);
@@ -128,30 +126,28 @@ exports.deleteChat = async function (req, res) {
 exports.deleteAllChat = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: otherUserIdx, groupName
+     * Query String: chatIdx, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const otherUserIdx = req.query.otherUserIdx;
+    const chatIdx = req.query.chatIdx;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
-    else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
+    if (!chatIdx)
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
 
-    if (otherUserIdx && !groupName) {
+    if (!groupName) {
         // 갠톡 채팅 내용 삭제
-        const deletePersonalChatResult = await chatService.deletePersonalChats(userIdx, otherUserIdx);
+        const deletePersonalChatResult = await chatService.deletePersonalChats(userIdx, chatIdx);
         return res.send(deletePersonalChatResult);
-    } else if (!otherUserIdx && groupName) {
+    } else {
         // 단톡 채팅 내용 삭제
-        const deleteGroupChatResult = await chatService.deleteGroupChats(userIdx, groupName);
+        const deleteGroupChatResult = await chatService.deleteGroupChats(userIdx, chatIdx);
         return res.send(deleteGroupChatResult);
     }
 };
@@ -174,13 +170,13 @@ exports.postChat = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
     if (!nickname)
-        return res.send(response(baseResponse.CHAT_OPPONENT_NICKNAME_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_NICKNAME_EMPTY));
     if (!message)
-        return res.send(response(baseResponse.CHAT_MESSAGE_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_MESSAGE_EMPTY));
     if (!postTime)
-        return res.send(response(baseResponse.CHAT_POST_TIME_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_POST_TIME_EMPTY));
 
     const addChatResponse = await chatService.addChat(userIdx, nickname, groupName, profileImgUrl, message, postTime);
 
@@ -206,11 +202,11 @@ exports.addChatToFolder = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
     if (!chatIdx)
-        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
     if (!folderIdx)
-        return res.send(response(baseResponse.FOLDER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.FOLDER_ID_EMPTY));
 
     const addChatFolderResponse = await chatService.addChatFolder(userIdx, chatIdx, folderIdx);
 
@@ -237,13 +233,13 @@ exports.addChatsToFolder = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
     if (!folderIdx)
-        return res.send(response(baseResponse.FOLDER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.FOLDER_ID_EMPTY));
     if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
     else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_INVALID));
 
     const addChatsFolderResponse = await chatService.addChatsFolder(userIdx, otherUserIdx, groupName, folderIdx);
 
@@ -269,11 +265,11 @@ exports.deleteChatFromFolder = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
     if (!chatIdx)
-        return res.send(response(baseResponse.CHAT_ID_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
     if (!folderIdx)
-        return res.send(response(baseResponse.FOLDER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.FOLDER_ID_EMPTY));
 
     const deleteChatFolderResponse = await chatService.deleteChatFolder(userIdx, chatIdx, folderIdx);
 
@@ -300,11 +296,11 @@ exports.blockChat = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
     if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
     else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_INVALID));
 
     const blockChatResponse = await chatService.blockChat(userIdx, otherUserIdx, groupName);
 
@@ -330,11 +326,11 @@ exports.unblockChat = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
     if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
     else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_INVALID));
 
     const unblockChatResponse = await chatService.unblockChat(userIdx, otherUserIdx, groupName);
 
@@ -358,7 +354,7 @@ exports.getBlockedChatlist = async function (req, res) {
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
 
     const blockedChatListResponse = await chatProvider.retrieveBlockedChatList(userIdx);
 

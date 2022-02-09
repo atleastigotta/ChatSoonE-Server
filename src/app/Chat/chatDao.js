@@ -3,7 +3,7 @@
 // 모든 채팅목록 조회
 async function selectChatList(connection, kakaoUserIdx) {
   const selectChatListQuery = `
-          SELECT CM.chatIdx, CL.chatName AS chat_name, CL.profileImg AS profile_image, CL.latestTime AS latest_time, CM.message AS latest_message
+          SELECT CM.chatIdx, CL.chatName AS chat_name, CL.profileImg AS profile_image, CL.latestTime AS latest_time, CM.message AS latest_message, CM.groupName
           FROM
               (SELECT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName,
                       (CASE WHEN C.groupName is null THEN OU.profileImgUrl ELSE null END) AS profileImg,
@@ -12,7 +12,7 @@ async function selectChatList(connection, kakaoUserIdx) {
                WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED'
                GROUP BY chatName, profileImg) CL
                   INNER JOIN
-              (SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName, C.chatIdx, C.message, C.postTime
+              (SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName, C.chatIdx, C.message, C.postTime, C.groupName
                FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
                WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED') CM
               ON CL.chatName = CM.chatName AND CL.latestTime = CM.postTime
@@ -22,51 +22,58 @@ async function selectChatList(connection, kakaoUserIdx) {
   return chatListRows;
 }
 
+// 갠톡 채팅 체크
+async function checkPersonalChat(connection, chatIdx) {
+    const selectPersonalChatQuery = `
+            SELECT *
+            FROM Chat
+            WHERE groupName is null AND otherUserIdx IN (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND status != 'DELETED';
+            `;
+    const [chatRows] = await connection.query(selectPersonalChatQuery, chatIdx);
+    return chatRows;
+}
+
 // 갠톡 채팅 조회
-async function selectPersonalChats(connection, userIdx, otherUserIdx) {
+async function selectPersonalChats(connection, userIdx, chatIdx) {
   const selectPersonalChatQuery = `
-          SELECT OU.nickname, OU.profileImgUrl, C.message,
-                 (CASE
-                    WHEN TIMESTAMPDIFF(DAY, C.postTime, NOW()) >= 1 THEN C.postTime
-                    ELSE null
-                   END) AS chat_date,
-                 C.postTime AS post_time
-            #DATE_FORMAT(C.postTime, '%H:%i') AS post_time
+          SELECT C.chatIdx, OU.nickname, OU.profileImgUrl, C.message, C.postTime AS post_time, C.groupName
+                #DATE_FORMAT(C.postTime, '%H:%i') AS post_time
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED' AND C.otherUserIdx = ? AND groupName is null
+          WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED' AND C.otherUserIdx = (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND groupName is null
           ORDER BY C.postTime DESC;
           `;
-  const [chatRows] = await connection.query(selectPersonalChatQuery, [userIdx, otherUserIdx]);
+  const [chatRows] = await connection.query(selectPersonalChatQuery, [userIdx, chatIdx]);
   return chatRows;
 }
 
+// 단톡 채팅 체크
+async function checkGroupChat(connection, chatIdx) {
+    const selectGroupChatQuery = `
+        SELECT *
+        FROM Chat
+        WHERE groupName IN (SELECT groupName FROM Chat WHERE chatIdx = ?) AND status != 'DELETED';
+    `;
+    const [chatRows] = await connection.query(selectGroupChatQuery, chatIdx);
+    return chatRows;
+}
+
 // 단톡 채팅 조회
-async function selectGroupChats(connection, userIdx, groupName) {
+async function selectGroupChats(connection, userIdx, chatIdx) {
   const selectGroupChatQuery = `
-          SELECT OU.nickname, OU.profileImgUrl, C.message,
-                 (CASE
-                    WHEN TIMESTAMPDIFF(DAY, C.postTime, NOW()) >= 1 THEN C.postTime
-                    ELSE null
-                   END) AS chat_date,
-                 C.postTime AS post_time
-            #DATE_FORMAT(C.postTime, '%H:%i') AS post_time
+          SELECT C.chatIdx, OU.nickname, OU.profileImgUrl, C.message, C.postTime AS post_time, C.groupName
+                #DATE_FORMAT(C.postTime, '%H:%i') AS post_time
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED' AND groupName = ?
+          WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED' AND groupName = (SELECT groupName FROM Chat WHERE chatIdx = ?)
           ORDER BY C.postTime DESC;
           `;
-  const [chatRows] = await connection.query(selectGroupChatQuery, [userIdx, groupName]);
+  const [chatRows] = await connection.query(selectGroupChatQuery, [userIdx, chatIdx]);
   return chatRows;
 }
 
 // 폴더 채팅 조회
 async function selectFolderChats(connection, userIdx, folderIdx) {
   const selectFolderChatQuery = `
-          SELECT FI.folderName, OU.nickname, OU.profileImgUrl, C.message,
-                 (CASE
-                      WHEN TIMESTAMPDIFF(DAY, C.postTime, NOW()) >= 1 THEN C.postTime
-                      ELSE null
-                     END) AS chat_date,
-                 C.postTime as post_time
+          SELECT FI.folderName, OU.nickname, OU.profileImgUrl, C.message, C.postTime as post_time
               #DATE_FORMAT(C.postTime, '%H:%i') AS post_time
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx INNER JOIN FolderContent FC on C.chatIdx = FC.chatIdx INNER JOIN FolderInfo FI on FC.folderIdx = FI.folderIdx
           WHERE OU.kakaoUserIdx = ? AND FC.folderIdx = ? AND C.status != 'DELETED' AND FC.status != 'DELETED'
@@ -90,25 +97,25 @@ async function selectChat(connection, chatIdx) {
 }
 
 // 갠톡 채팅 체크
-async function selectUserChat(connection, userIdx, otherUserIdx) {
+async function selectUserChat(connection, userIdx, chatIdx) {
   const selectChatQuery = `
           SELECT *
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.otherUserIdx = ? AND C.groupName is null AND C.status != 'DELETED';
+          WHERE OU.kakaoUserIdx = 1234 AND C.otherUserIdx = (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND C.groupName is null AND C.status != 'DELETED';
           `;
-  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, otherUserIdx]);
+  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, chatIdx]);
 
   return selectChatRow;
 }
 
 // 단톡 채팅 체크
-async function selectGroupChat(connection, userIdx, groupName) {
+async function selectGroupChat(connection, userIdx, chatIdx) {
   const selectChatQuery = `
-          SELECT *
+          SELECT DISTINCT C.groupName
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.groupName = ? AND C.status != 'DELETED';
+          WHERE OU.kakaoUserIdx = 1234 AND C.groupName = (SELECT groupName FROM Chat WHERE chatIdx = ?) AND C.status != 'DELETED';
           `;
-  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, groupName]);
+  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, chatIdx]);
 
   return selectChatRow;
 }
@@ -191,36 +198,50 @@ async function deleteChat(connection, chatIdx) {
   return deleteChatRow;
 }
 
-// 갠톡 채팅 전체 삭제
-async function deleteUserChat(connection, otherUserIdx) {
-  const deleteAllChatsQuery = `
-        DELETE FROM Chat
-        WHERE otherUserIdx = ? AND groupName is null;
+// 폴더에서 채팅 삭제
+async function deleteFolderChat(connection, chatIdx) {
+    const deleteChatQuery = `
+        DELETE FROM FolderContent
+        WHERE chatIdx = ?;
         `;
-  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, otherUserIdx);
+    const [deleteChatRow] = await connection.query(deleteChatQuery, chatIdx);
+    return deleteChatRow;
+}
+
+// 갠톡 채팅 전체 삭제
+async function deleteUserChat(connection, chatIdx) {
+  const deleteAllChatsQuery = `
+          DELETE FROM Chat
+          WHERE otherUserIdx IN
+                (SELECT otherUserIdx From (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) as DChat)
+            AND groupName is null;
+            `;
+  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, chatIdx);
   return deleteChatsRow;
 }
 
 // 단톡 채팅 전체 삭제
-async function deleteGroupChat(connection, userIdx, groupName) {
+async function deleteGroupChat(connection, userIdx, chatIdx) {
   const deleteAllChatsQuery = `
-        DELETE FROM Chat
-        WHERE groupName = ? AND otherUserIdx IN (SELECT CD.otherUserIdx
-                                                   FROM (SELECT C.otherUserIdx
-                                                         FROM Chat C INNER JOIN OtherUser OU ON C.otherUserIdx = OU.otherUserIdx
-                                                         WHERE OU.kakaoUserIdx = ? AND C.groupName = ?) CD
-        );
-        `;
-  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, [groupName, userIdx, groupName]);
+          DELETE FROM Chat
+          WHERE groupName IN
+                (SELECT groupName FROM (SELECT groupName FROM Chat WHERE chatIdx = ?) as DChat)
+            AND otherUserIdx IN
+                (SELECT otherUserIdx
+                 FROM (SELECT DISTINCT C.otherUserIdx
+                       FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
+                       WHERE OU.kakaoUserIdx = ?) as UChat);
+                       `;
+  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, [chatIdx, userIdx]);
   return deleteChatsRow;
 }
 
 // 이미 있는 채팅 상대인지 체크
 async function selectExistingUser(connection, userIdx, nickname) {
     const selectExistingUserQuery = `
-        SELECT DISTINCT C.otherUserIdx
-        FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-        WHERE OU.kakaoUserIdx = ? AND OU.nickname = ? AND C.status = 'ACTIVE';
+        SELECT DISTINCT otherUserIdx
+        FROM OtherUser
+        WHERE kakaoUserIdx = ? AND nickname = ?
         `;
     const [selectExistingUserRow] = await connection.query(selectExistingUserQuery, [userIdx, nickname]);
     return selectExistingUserRow;
@@ -373,9 +394,10 @@ async function unblockGroupChat(connection, userIdx, groupName) {
 // 차단된 톡방목록 조회
 async function selectBlockedChatList(connection, kakaoUserIdx) {
     const selectBlockedChatListQuery = `
-            SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS blocked_chatlist
+            SELECT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS blocked_name,
+                   (CASE WHEN C.groupName is null THEN OU.profileImgUrl ELSE null END) AS blocked_profileImg
             FROM OtherUser OU INNER JOIN Chat C on OU.otherUserIdx = C.otherUserIdx
-            WHERE OU.kakaoUserIdx = ? AND (OU.status = 'BLOCKED' OR C.status = 'BLOCKED');
+            WHERE OU.kakaoUserIdx = ? AND C.status = 'BLOCKED';
             `;
     const [blockedChatListRows] = await connection.query(selectBlockedChatListQuery, kakaoUserIdx);
     return blockedChatListRows;
@@ -383,7 +405,9 @@ async function selectBlockedChatList(connection, kakaoUserIdx) {
 
 module.exports = {
     selectChatList,
+    checkPersonalChat,
     selectPersonalChats,
+    checkGroupChat,
     selectGroupChats,
     selectFolderChats,
     selectChat,
@@ -394,6 +418,7 @@ module.exports = {
     selectBlockedUser,
     selectBlockedChat,
     deleteChat,
+    deleteFolderChat,
     deleteUserChat,
     deleteGroupChat,
     selectExistingUser,
