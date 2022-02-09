@@ -36,30 +36,28 @@ exports.getChatList = async function (req, res) {
 exports.getChats = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: otherUserIdx, groupName
+     * Query String: chatIdx, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const otherUserIdx = req.query.otherUserIdx;
+    const chatIdx = req.query.chatIdx;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
-        return res.send(response(baseResponse.USER_ID_EMPTY));
-    if (!otherUserIdx && !groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_EMPTY));
-    else if (otherUserIdx && groupName)
-        return res.send(response(baseResponse.CHAT_OPPONENT_INVALID));
+        return res.send(errResponse(baseResponse.USER_ID_EMPTY));
+    if (!chatIdx)
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
 
-    if (otherUserIdx && !groupName) {
+    if (!groupName) {
         // 갠톡 채팅 내용 조회
-        const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, otherUserIdx);
+        const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, chatIdx);
         return res.send(response(baseResponse.SUCCESS, personalChatListResult));
-    } else if (!otherUserIdx && groupName) {
+    } else {
         // 단톡 채팅 내용 조회
-        const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, groupName);
+        const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, chatIdx);
         return res.send(response(baseResponse.SUCCESS, groupChatListResult));
     }
 };
