@@ -23,13 +23,13 @@ async function selectChatList(connection, kakaoUserIdx) {
 }
 
 // 갠톡 채팅 체크
-async function checkPersonalChat(connection, userIdx, chatIdx) {
+async function checkPersonalChat(connection, chatIdx) {
     const selectPersonalChatQuery = `
-          SELECT *
-          FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED' AND C.chatIdx = ? AND groupName is null;
-          `;
-    const [chatRows] = await connection.query(selectPersonalChatQuery, [userIdx, chatIdx]);
+            SELECT *
+            FROM Chat
+            WHERE groupName is null AND otherUserIdx IN (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND status != 'DELETED';
+            `;
+    const [chatRows] = await connection.query(selectPersonalChatQuery, chatIdx);
     return chatRows;
 }
 
@@ -47,13 +47,13 @@ async function selectPersonalChats(connection, userIdx, chatIdx) {
 }
 
 // 단톡 채팅 체크
-async function checkGroupChat(connection, userIdx, chatIdx) {
+async function checkGroupChat(connection, chatIdx) {
     const selectGroupChatQuery = `
         SELECT *
-        FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-        WHERE OU.kakaoUserIdx = ? AND C.status != 'DELETED' AND groupName is not null;
+        FROM Chat
+        WHERE groupName IN (SELECT groupName FROM Chat WHERE chatIdx = ?) AND status != 'DELETED';
     `;
-    const [chatRows] = await connection.query(selectGroupChatQuery, [userIdx, chatIdx]);
+    const [chatRows] = await connection.query(selectGroupChatQuery, chatIdx);
     return chatRows;
 }
 
@@ -97,25 +97,25 @@ async function selectChat(connection, chatIdx) {
 }
 
 // 갠톡 채팅 체크
-async function selectUserChat(connection, userIdx, otherUserIdx) {
+async function selectUserChat(connection, userIdx, chatIdx) {
   const selectChatQuery = `
           SELECT *
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.otherUserIdx = ? AND C.groupName is null AND C.status != 'DELETED';
+          WHERE OU.kakaoUserIdx = 1234 AND C.otherUserIdx = (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND C.groupName is null AND C.status != 'DELETED';
           `;
-  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, otherUserIdx]);
+  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, chatIdx]);
 
   return selectChatRow;
 }
 
 // 단톡 채팅 체크
-async function selectGroupChat(connection, userIdx, groupName) {
+async function selectGroupChat(connection, userIdx, chatIdx) {
   const selectChatQuery = `
-          SELECT *
+          SELECT DISTINCT C.groupName
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-          WHERE OU.kakaoUserIdx = ? AND C.groupName = ? AND C.status != 'DELETED';
+          WHERE OU.kakaoUserIdx = 1234 AND C.groupName = (SELECT groupName FROM Chat WHERE chatIdx = ?) AND C.status != 'DELETED';
           `;
-  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, groupName]);
+  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, chatIdx]);
 
   return selectChatRow;
 }
@@ -198,36 +198,50 @@ async function deleteChat(connection, chatIdx) {
   return deleteChatRow;
 }
 
-// 갠톡 채팅 전체 삭제
-async function deleteUserChat(connection, otherUserIdx) {
-  const deleteAllChatsQuery = `
-        DELETE FROM Chat
-        WHERE otherUserIdx = ? AND groupName is null;
+// 폴더에서 채팅 삭제
+async function deleteFolderChat(connection, chatIdx) {
+    const deleteChatQuery = `
+        DELETE FROM FolderContent
+        WHERE chatIdx = ?;
         `;
-  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, otherUserIdx);
+    const [deleteChatRow] = await connection.query(deleteChatQuery, chatIdx);
+    return deleteChatRow;
+}
+
+// 갠톡 채팅 전체 삭제
+async function deleteUserChat(connection, chatIdx) {
+  const deleteAllChatsQuery = `
+          DELETE FROM Chat
+          WHERE otherUserIdx IN
+                (SELECT otherUserIdx From (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) as DChat)
+            AND groupName is null;
+            `;
+  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, chatIdx);
   return deleteChatsRow;
 }
 
 // 단톡 채팅 전체 삭제
-async function deleteGroupChat(connection, userIdx, groupName) {
+async function deleteGroupChat(connection, userIdx, chatIdx) {
   const deleteAllChatsQuery = `
-        DELETE FROM Chat
-        WHERE groupName = ? AND otherUserIdx IN (SELECT CD.otherUserIdx
-                                                   FROM (SELECT C.otherUserIdx
-                                                         FROM Chat C INNER JOIN OtherUser OU ON C.otherUserIdx = OU.otherUserIdx
-                                                         WHERE OU.kakaoUserIdx = ? AND C.groupName = ?) CD
-        );
-        `;
-  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, [groupName, userIdx, groupName]);
+          DELETE FROM Chat
+          WHERE groupName IN
+                (SELECT groupName FROM (SELECT groupName FROM Chat WHERE chatIdx = ?) as DChat)
+            AND otherUserIdx IN
+                (SELECT otherUserIdx
+                 FROM (SELECT DISTINCT C.otherUserIdx
+                       FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
+                       WHERE OU.kakaoUserIdx = ?) as UChat);
+                       `;
+  const [deleteChatsRow] = await connection.query(deleteAllChatsQuery, [chatIdx, userIdx]);
   return deleteChatsRow;
 }
 
 // 이미 있는 채팅 상대인지 체크
 async function selectExistingUser(connection, userIdx, nickname) {
     const selectExistingUserQuery = `
-        SELECT DISTINCT C.otherUserIdx
-        FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-        WHERE OU.kakaoUserIdx = ? AND OU.nickname = ? AND C.status = 'ACTIVE';
+        SELECT DISTINCT otherUserIdx
+        FROM OtherUser
+        WHERE kakaoUserIdx = ? AND nickname = ?
         `;
     const [selectExistingUserRow] = await connection.query(selectExistingUserQuery, [userIdx, nickname]);
     return selectExistingUserRow;
@@ -404,6 +418,7 @@ module.exports = {
     selectBlockedUser,
     selectBlockedChat,
     deleteChat,
+    deleteFolderChat,
     deleteUserChat,
     deleteGroupChat,
     selectExistingUser,

@@ -22,7 +22,7 @@ exports.retrievePersonalChats = async function (userIdx, chatIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   // --논리 체크--
   // 해당 채팅 id의 개인톡이 있는가
-  const chatCheckResult = await chatDao.checkPersonalChat(connection, userIdx, chatIdx);
+  const chatCheckResult = await chatDao.checkPersonalChat(connection, chatIdx);
   if (chatCheckResult.length <= 0)
     return errResponse(baseResponse.CHAT_NOT_EXISTS);
 
@@ -36,8 +36,8 @@ exports.retrievePersonalChats = async function (userIdx, chatIdx) {
 exports.retrieveGroupChats = async function (userIdx, chatIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   // --논리 체크--
-  // 해당 채팅 id의 개인톡이 있는가
-  const chatCheckResult = await chatDao.checkGroupChat(connection, userIdx, chatIdx);
+  // 해당 채팅 id의 단톡이 있는가
+  const chatCheckResult = await chatDao.checkGroupChat(connection, chatIdx);
   if (chatCheckResult.length <= 0)
     return errResponse(baseResponse.CHAT_NOT_EXISTS);
 
@@ -66,18 +66,18 @@ exports.chatCheck = async function (chatIdx) {
   return chatCheckResult;
 };
 
-exports.chatUserCheck = async function (userIdx, otherUserIdx) {
+exports.chatUserCheck = async function (userIdx, chatIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const chatCheckResult = await chatDao.selectUserChat(connection, userIdx, otherUserIdx);
+  const chatCheckResult = await chatDao.selectUserChat(connection, userIdx, chatIdx);
   connection.release();
   // console.log(chatCheckResult);
 
   return chatCheckResult;
 };
 
-exports.chatGroupCheck = async function (userIdx, groupName) {
+exports.chatGroupCheck = async function (userIdx, chatIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const chatCheckResult = await chatDao.selectGroupChat(connection, userIdx, groupName);
+  const chatCheckResult = await chatDao.selectGroupChat(connection, userIdx, chatIdx);
   connection.release();
   // console.log(chatCheckResult);
 

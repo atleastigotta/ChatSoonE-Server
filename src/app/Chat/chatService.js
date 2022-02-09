@@ -24,7 +24,10 @@ exports.deleteChat = async function (userIdx, chatIdx) {
         //     return errResponse(baseResponse.CHAT_ALREADY_DELETED);
 
         const connection = await pool.getConnection(async (conn) => conn);
+        // 채팅 삭제
         const deleteChatResult = await chatDao.deleteChat(connection, chatIdx);
+        // 삭제할 채팅이 들어간 폴더에서도 채팅 삭제
+        // const deleteChatFromFolderResult = await chatDao.deleteFolderChat(connection, chatIdx)
         connection.release();
 
         return response(baseResponse.SUCCESS);
@@ -34,16 +37,16 @@ exports.deleteChat = async function (userIdx, chatIdx) {
     }
 };
 
-exports.deletePersonalChats = async function (userIdx, otherUserIdx) {
+exports.deletePersonalChats = async function (userIdx, chatIdx) {
     try {
         // --논리 체크--
         // 해당 채팅이 존재하는가
-        const chatRows = await chatProvider.chatUserCheck(userIdx, otherUserIdx);
+        const chatRows = await chatProvider.chatUserCheck(chatIdx);
         if (chatRows.length <= 0)
             return errResponse(baseResponse.OPPONENT_NOT_EXISTS);
 
         const connection = await pool.getConnection(async (conn) => conn);
-        const deleteUserChatResult = await chatDao.deleteUserChat(connection, otherUserIdx);
+        const deleteUserChatResult = await chatDao.deleteUserChat(connection, chatIdx);
         connection.release();
         return response(baseResponse.SUCCESS);
     } catch (err) {
@@ -52,16 +55,16 @@ exports.deletePersonalChats = async function (userIdx, otherUserIdx) {
     }
 };
 
-exports.deleteGroupChats = async function (userIdx, groupName) {
+exports.deleteGroupChats = async function (userIdx, chatIdx) {
     try {
         // --논리 체크--
         // 해당 채팅이 존재하는가
-        const chatRows = await chatProvider.chatGroupCheck(userIdx, groupName);
+        const chatRows = await chatProvider.chatGroupCheck(chatIdx);
         if (chatRows.length <= 0)
             return errResponse(baseResponse.GROUP_NOT_EXISTS);
 
         const connection = await pool.getConnection(async (conn) => conn);
-        const deleteGroupChatResult = await chatDao.deleteGroupChat(connection, userIdx, groupName);
+        const deleteGroupChatResult = await chatDao.deleteGroupChat(connection, userIdx, chatIdx);
         connection.release();
         return response(baseResponse.SUCCESS);
     } catch (err) {
@@ -104,6 +107,7 @@ exports.addChat = async function (userIdx, nickname, groupName, profileImgUrl, m
             // console.log(otherUserIdx);
         }
 
+        // console.log(otherUserIdx);
         // 채팅 추가
         const addChatResult = await chatDao.insertChatInfo(connection, userIdx, otherUserIdx, groupName, message, postTime);
 
