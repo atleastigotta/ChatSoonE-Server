@@ -221,12 +221,12 @@ exports.addChatToFolder = async function (req, res) {
 exports.addChatsToFolder = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: otherUserIdx, groupName
+     * Query String: chatIdx, groupName
      * Header:
      * Body: folderIdx
      */
     const userIdx = req.params.kakaoUserIdx;
-    const otherUserIdx = req.query.otherUserIdx;
+    const chatIdx = req.query.chatIdx;
     const groupName = req.query.groupName;
     const folderIdx = req.body.folderIdx;
 
@@ -234,14 +234,12 @@ exports.addChatsToFolder = async function (req, res) {
     // 빈 값 체크
     if (!userIdx)
         return res.send(errResponse(baseResponse.USER_ID_EMPTY));
+    if (!chatIdx)
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
     if (!folderIdx)
         return res.send(errResponse(baseResponse.FOLDER_ID_EMPTY));
-    if (!otherUserIdx && !groupName)
-        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
-    else if (otherUserIdx && groupName)
-        return res.send(errResponse(baseResponse.CHAT_OPPONENT_INVALID));
 
-    const addChatsFolderResponse = await chatService.addChatsFolder(userIdx, otherUserIdx, groupName, folderIdx);
+    const addChatsFolderResponse = await chatService.addChatsFolder(userIdx, chatIdx, folderIdx, groupName);
 
     return res.send(addChatsFolderResponse);
 };
@@ -285,24 +283,22 @@ exports.deleteChatFromFolder = async function (req, res) {
 exports.blockChat = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: otherUserIdx, groupName
+     * Query String: chatIdx, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const otherUserIdx = req.query.otherUserIdx;
+    const chatIdx = req.query.chatIdx;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(errResponse(baseResponse.USER_ID_EMPTY));
-    if (!otherUserIdx && !groupName)
-        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
-    else if (otherUserIdx && groupName)
-        return res.send(errResponse(baseResponse.CHAT_OPPONENT_INVALID));
+    if (!chatIdx)
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
 
-    const blockChatResponse = await chatService.blockChat(userIdx, otherUserIdx, groupName);
+    const blockChatResponse = await chatService.blockChat(userIdx, chatIdx, groupName);
 
     return res.send(blockChatResponse);
 };
@@ -315,24 +311,22 @@ exports.blockChat = async function (req, res) {
 exports.unblockChat = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: otherUserIdx, groupName
+     * Query String: chatIdx, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const otherUserIdx = req.query.otherUserIdx;
+    const chatIdx = req.query.chatIdx;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(errResponse(baseResponse.USER_ID_EMPTY));
-    if (!otherUserIdx && !groupName)
-        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
-    else if (otherUserIdx && groupName)
-        return res.send(errResponse(baseResponse.CHAT_OPPONENT_INVALID));
+    if (!chatIdx)
+        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
 
-    const unblockChatResponse = await chatService.unblockChat(userIdx, otherUserIdx, groupName);
+    const unblockChatResponse = await chatService.unblockChat(userIdx, chatIdx, groupName);
 
     return res.send(unblockChatResponse);
 };

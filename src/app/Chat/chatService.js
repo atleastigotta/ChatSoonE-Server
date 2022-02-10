@@ -152,29 +152,29 @@ exports.addChatFolder = async function (userIdx, chatIdx, folderIdx) {
     }
 };
 
-exports.addChatsFolder = async function (userIdx, otherUserIdx, groupName, folderIdx) {
+exports.addChatsFolder = async function (userIdx, chatIdx, folderIdx, groupName) {
     try {
         // --논리 체크--
         // 갠톡인 경우
-        if (otherUserIdx && !groupName) {
+        if (!groupName) {
             // 해당 채팅이 존재하는가
-            const chatRows = await chatProvider.chatUserCheck(userIdx, otherUserIdx);
+            const chatRows = await chatProvider.chatUserCheck(userIdx, chatIdx);
             if (chatRows.length <= 0)
                 return errResponse(baseResponse.OPPONENT_NOT_EXISTS);
 
             const connection = await pool.getConnection(async (conn) => conn);
-            const addChatsToFolderResult = await chatDao.putChatsToFolder(connection, otherUserIdx, folderIdx)
+            const addChatsToFolderResult = await chatDao.putChatsToFolder(connection, chatIdx, folderIdx)
             connection.release();
         }
         // 단톡인 경우
-        else if (!otherUserIdx && groupName) {
+        else {
             // 해당 채팅이 존재하는가
-            const chatRows = await chatProvider.chatGroupCheck(userIdx, groupName);
+            const chatRows = await chatProvider.chatGroupCheck(userIdx, chatIdx);
             if (chatRows.length <= 0)
                 return errResponse(baseResponse.GROUP_NOT_EXISTS);
 
             const connection = await pool.getConnection(async (conn) => conn);
-            const addChatsToFolderResult = await chatDao.putGroupChatsToFolder(connection, userIdx, groupName, folderIdx);
+            const addChatsToFolderResult = await chatDao.putGroupChatsToFolder(connection, userIdx, chatIdx, folderIdx);
             connection.release();
         }
 
@@ -217,23 +217,30 @@ exports.deleteChatFolder = async function (userIdx, chatIdx, folderIdx) {
     }
 };
 
-exports.blockChat = async function (userIdx, otherUserIdx, groupName) {
+// blocked & unblocked - 논리 체크 좀 부실함
+exports.blockChat = async function (userIdx, chatIdx, groupName) {
     try {
         // --논리 체크--
+        // chatIdx로 otherUserIdx 알아내기
+        let otherUserIdx;
+        const userRow = await chatProvider.chatCheck(chatIdx);
+        otherUserIdx = userRow[0].otherUserIdx;
+        // console.log(otherUserIdx);
+
         // 이미 Block(차단)된 채팅인가
         const blockedRows = await chatProvider.blockCheck(userIdx, otherUserIdx, groupName);
         if (blockedRows.length > 0) {
             return errResponse(baseResponse.CHATLIST_ALREADY_BLOCKED);
         }
         // 갠톡인 경우
-        if (otherUserIdx && !groupName) {
+        if (!groupName) {
             const connection = await pool.getConnection(async (conn) => conn);
-            const blockChatResult = await chatDao.blockChat(connection, otherUserIdx);
-            const blockUserResult = await chatDao.blockUser(connection, otherUserIdx);
+            // const blockChatResult = await chatDao.blockChat(connection, otherUserIdx);
+            const blockUserResult = await chatDao.blockUser(connection, chatIdx);
             connection.release();
         }
         // 단톡인 경우
-        else if (!otherUserIdx && groupName) {
+        else {
             const connection = await pool.getConnection(async (conn) => conn);
             const blockGroupChatResult = await chatDao.blockGroupChat(connection, userIdx, groupName);
             connection.release();
@@ -246,23 +253,30 @@ exports.blockChat = async function (userIdx, otherUserIdx, groupName) {
     }
 };
 
-exports.unblockChat = async function (userIdx, otherUserIdx, groupName) {
+exports.unblockChat = async function (userIdx, chatIdx, groupName) {
     try {
         // --논리 체크--
+        // chatIdx로 otherUserIdx 알아내기
+        let otherUserIdx;
+        const userRow = await chatProvider.chatCheck(chatIdx);
+        otherUserIdx = userRow[0].otherUserIdx;
+        // console.log(otherUserIdx);
+
         // 이미 Unblock(차단 해제)된 채팅인가
         const unblockedRows = await chatProvider.unblockCheck(userIdx, otherUserIdx, groupName);
+        // console.log(unblockedRows)
         if (unblockedRows.length > 0) {
             return errResponse(baseResponse.CHATLIST_ALREADY_UNBLOCKED);
         }
         // 갠톡인 경우
-        if (otherUserIdx && !groupName) {
+        if (!groupName) {
             const connection = await pool.getConnection(async (conn) => conn);
-            const unblockChatResult = await chatDao.unblockChat(connection, otherUserIdx);
-            const unblockUserResult = await chatDao.unblockUser(connection, otherUserIdx);
+            // const unblockChatResult = await chatDao.unblockChat(connection, otherUserIdx);
+            const unblockUserResult = await chatDao.unblockUser(connection, chatIdx);
             connection.release();
         }
         // 단톡인 경우
-        else if (!otherUserIdx && groupName) {
+        else {
             const connection = await pool.getConnection(async (conn) => conn);
             const unblockGroupChatResult = await chatDao.unblockGroupChat(connection, userIdx, groupName);
             connection.release();
