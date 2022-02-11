@@ -283,22 +283,22 @@ exports.deleteChatFromFolder = async function (req, res) {
 exports.blockChat = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatIdx, groupName
+     * Query String: chatName, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatIdx = req.query.chatIdx;
+    const chatName = req.query.chatName;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(errResponse(baseResponse.USER_ID_EMPTY));
-    if (!chatIdx)
-        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
+    if (!chatName)
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
 
-    const blockChatResponse = await chatService.blockChat(userIdx, chatIdx, groupName);
+    const blockChatResponse = await chatService.blockChat(userIdx, chatName, groupName);
 
     return res.send(blockChatResponse);
 };
@@ -311,22 +311,22 @@ exports.blockChat = async function (req, res) {
 exports.unblockChat = async function (req, res) {
     /**
      * Path Variable: kakaoUserIdx
-     * Query String: chatIdx, groupName
+     * Query String: chatName, groupName
      * Header:
      * Body:
      */
     const userIdx = req.params.kakaoUserIdx;
-    const chatIdx = req.query.chatIdx;
+    const chatName = req.query.chatName;
     const groupName = req.query.groupName;
 
     // --형식 체크--
     // 빈 값 체크
     if (!userIdx)
         return res.send(errResponse(baseResponse.USER_ID_EMPTY));
-    if (!chatIdx)
-        return res.send(errResponse(baseResponse.CHAT_ID_EMPTY));
+    if (!chatName)
+        return res.send(errResponse(baseResponse.CHAT_OPPONENT_EMPTY));
 
-    const unblockChatResponse = await chatService.unblockChat(userIdx, chatIdx, groupName);
+    const unblockChatResponse = await chatService.unblockChat(userIdx, chatName, groupName);
 
     return res.send(unblockChatResponse);
 };

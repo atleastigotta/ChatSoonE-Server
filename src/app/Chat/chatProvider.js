@@ -103,6 +103,14 @@ exports.newUserCheck = async function (userIdx, nickname) {
   return newUserCheckResult;
 };
 
+exports.retrieveUserInfo = async function (userIdx, chatName) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const userResult = await chatDao.selectUserIdx(connection, userIdx, chatName)
+  connection.release();
+
+  return userResult;
+};
+
 exports.blockCheck = async function (userIdx, otherUserIdx, groupName) {
   const connection = await pool.getConnection(async (conn) => conn);
   let blockResult;

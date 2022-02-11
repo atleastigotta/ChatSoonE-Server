@@ -319,6 +319,17 @@ async function removeChatFromFolder(connection, chatIdx, folderIdx) {
   return removeChatFromFolderRow;
 }
 
+async function selectUserIdx(connection, userIdx, nickname) {
+    const selectUserIdxQuery = `
+            SELECT otherUserIdx
+            FROM OtherUser
+            WHERE kakaoUserIdx = ? AND nickname = ?;
+            `;
+    const [selectUserIdxRow] = await connection.query(selectUserIdxQuery, [userIdx, nickname]);
+
+    return selectUserIdxRow;
+}
+
 // 갠톡 채팅 차단하기
 async function blockChat(connection, chatIdx) {
     const blockChatQuery = `
@@ -332,14 +343,13 @@ async function blockChat(connection, chatIdx) {
 }
 
 // 갠톡 유저 차단하기
-async function blockUser(connection, chatIdx) {
+async function blockUser(connection, userIdx, nickname) {
     const blockUserQuery = `
             UPDATE OtherUser
             SET status = 'BLOCKED'
-            WHERE otherUserIdx IN (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND
-                EXISTS(SELECT * FROM Chat WHERE groupName is null AND chatIdx = ?);
+            WHERE nickname = ? AND kakaoUserIdx = ? AND status = 'ACTIVE';
             `;
-    const blockUserRow = await connection.query(blockUserQuery, [chatIdx, chatIdx]);
+    const blockUserRow = await connection.query(blockUserQuery, [nickname, userIdx]);
 
     return blockUserRow;
 }
@@ -349,7 +359,7 @@ async function blockGroupChat(connection, userIdx, groupName) {
     const blockGroupChatQuery = `
             UPDATE Chat
             SET status = 'BLOCKED'
-            WHERE groupName = ? AND
+            WHERE groupName = ? AND status = 'ACTIVE' AND
                     otherUserIdx IN (SELECT otherUserIdx FROM OtherUser WHERE kakaoUserIdx = ?);
             `;
     const blockGroupChatRow = await connection.query(blockGroupChatQuery, [groupName, userIdx]);
@@ -370,14 +380,13 @@ async function unblockChat(connection, otherUserIdx) {
 }
 
 // 갠톡 유저 차단 해제하기
-async function unblockUser(connection, chatIdx) {
+async function unblockUser(connection, userIdx, nickname) {
     const unblockUserQuery = `
             UPDATE OtherUser
             SET status = 'ACTIVE'
-            WHERE otherUserIdx = (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND
-                EXISTS(SELECT * FROM Chat WHERE groupName is null AND chatIdx = ?);
+            WHERE nickname = ? AND kakaoUserIdx = ? AND status = 'BLOCKED';
             `;
-    const unblockUserRow = await connection.query(unblockUserQuery, [chatIdx, chatIdx]);
+    const unblockUserRow = await connection.query(unblockUserQuery, [nickname, userIdx]);
 
     return unblockUserRow;
 }
@@ -385,9 +394,9 @@ async function unblockUser(connection, chatIdx) {
 // 단톡 채팅 차단 해제하기
 async function unblockGroupChat(connection, userIdx, groupName) {
     const unblockGroupChatQuery = `
-            UPDATE Chat C
-            SET C.status = 'ACTIVE'
-            WHERE  C.groupName = ? AND
+            UPDATE Chat
+            SET status = 'ACTIVE'
+            WHERE groupName = ? AND status = 'BLOCKED' AND
                     otherUserIdx IN (SELECT otherUserIdx FROM OtherUser WHERE kakaoUserIdx = ?);
             `;
     const unblockGroupChatRow = await connection.query(unblockGroupChatQuery, [groupName, userIdx]);
@@ -398,19 +407,13 @@ async function unblockGroupChat(connection, userIdx, groupName) {
 // 차단된 톡방목록 조회
 async function selectBlockedChatList(connection, kakaoUserIdx) {
     const selectBlockedChatListQuery = `
-            SELECT CM.chatIdx, CL.chatName AS blocked_name, CL.profileImg AS blocked_profileImg, CM.groupName
-            FROM
-                (SELECT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName,
-                        (CASE WHEN C.groupName is null THEN OU.profileImgUrl ELSE null END) AS profileImg,
-                        MAX(C.postTime) as latestTime
-                 FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-                 WHERE OU.kakaoUserIdx = ? AND (C.status = 'BLOCKED' OR OU.status = 'BLOCKED')
-                 GROUP BY chatName, profileImg) CL
-                    INNER JOIN
-                (SELECT DISTINCT (CASE WHEN C.groupName is null THEN OU.nickname ELSE C.groupName END) AS chatName, C.chatIdx, C.postTime, C.groupName
-                 FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
-                 WHERE OU.kakaoUserIdx = ? AND (C.status = 'BLOCKED' OR OU.status = 'BLOCKED')) CM
-                ON CL.chatName = CM.chatName AND CL.latestTime = CM.postTime;
+            SELECT DISTINCT OU.nickname AS blocked_name, OU.profileImgUrl AS blocked_profileImg, C.groupName AS groupName, OU.status AS status
+            FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
+            WHERE OU.kakaoUserIdx = ? AND OU.status = 'BLOCKED' AND C.groupName is null
+            UNION
+            SELECT DISTINCT C.groupName AS blocked_name, null AS blocked_profileImg, C.groupName AS groupName, C.status AS status
+            FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
+            WHERE OU.kakaoUserIdx = ? AND C.status = 'BLOCKED' AND C.groupName is not null;
             `;
     const [blockedChatListRows] = await connection.query(selectBlockedChatListQuery, [kakaoUserIdx, kakaoUserIdx]);
     return blockedChatListRows;
@@ -441,6 +444,7 @@ module.exports = {
     putChatsToFolder,
     putGroupChatsToFolder,
     removeChatFromFolder,
+    selectUserIdx,
     blockChat,
     blockUser,
     blockGroupChat,
