@@ -73,7 +73,7 @@ async function selectGroupChats(connection, userIdx, chatIdx) {
 // 폴더 채팅 조회
 async function selectFolderChats(connection, userIdx, folderIdx) {
   const selectFolderChatQuery = `
-          SELECT FI.folderName, OU.nickname, OU.profileImgUrl, C.message, C.postTime as post_time
+          SELECT C.chatIdx, FI.folderName, OU.nickname, OU.profileImgUrl, C.message, C.postTime as post_time
               #DATE_FORMAT(C.postTime, '%H:%i') AS post_time
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx INNER JOIN FolderContent FC on C.chatIdx = FC.chatIdx INNER JOIN FolderInfo FI on FC.folderIdx = FI.folderIdx
           WHERE OU.kakaoUserIdx = ? AND FC.folderIdx = ? AND C.status != 'DELETED' AND FC.status != 'DELETED'
