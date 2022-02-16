@@ -3,7 +3,7 @@
 // 모든 폴더목록 조회
 async function selectFolderList(connection, kakaoUserIdx) {
   const selectFolderListQuery = `
-          SELECT folderName, folderImg
+          SELECT folderIdx, folderName, folderImg
           FROM FolderInfo
           WHERE kakaoUserIdx = ? AND status != 'HIDDEN';
           `;
@@ -103,7 +103,7 @@ async function deleteFolder(connection, folderIdx) {
 // 숨긴 폴더목록 조회
 async function selectHiddenFolderList(connection, kakaoUserIdx) {
     const selectHiddenFolderListQuery = `
-          SELECT folderName, folderImg
+          SELECT folderIdx, folderName, folderImg
           FROM FolderInfo
           WHERE kakaoUserIdx = ? AND status = 'HIDDEN';
           `;
