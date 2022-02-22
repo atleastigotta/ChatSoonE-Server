@@ -103,7 +103,7 @@ async function selectUserChat(connection, userIdx, chatIdx) {
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
           WHERE OU.kakaoUserIdx = ? AND C.otherUserIdx = (SELECT otherUserIdx FROM Chat WHERE chatIdx = ?) AND C.groupName is null AND C.status != 'DELETED';
           `;
-  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, chatIdx]);
+  const selectChatRow = await connection.query(selectChatQuery, [userIdx, chatIdx]);
 
   return selectChatRow;
 }
@@ -115,7 +115,7 @@ async function selectGroupChat(connection, userIdx, chatIdx) {
           FROM Chat C INNER JOIN OtherUser OU on C.otherUserIdx = OU.otherUserIdx
           WHERE OU.kakaoUserIdx = ? AND C.groupName = (SELECT groupName FROM Chat WHERE chatIdx = ?) AND C.status != 'DELETED';
           `;
-  const [selectChatRow] = await connection.query(selectChatQuery, [userIdx, chatIdx]);
+  const selectChatRow = await connection.query(selectChatQuery, [userIdx, chatIdx]);
 
   return selectChatRow;
 }

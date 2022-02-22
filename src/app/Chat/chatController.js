@@ -54,11 +54,11 @@ exports.getChats = async function (req, res) {
     if (!groupName) {
         // 갠톡 채팅 내용 조회
         const personalChatListResult = await chatProvider.retrievePersonalChats(userIdx, chatIdx);
-        return res.send(response(baseResponse.SUCCESS, personalChatListResult));
+        return res.send(personalChatListResult);
     } else {
         // 단톡 채팅 내용 조회
         const groupChatListResult = await chatProvider.retrieveGroupChats(userIdx, chatIdx);
-        return res.send(response(baseResponse.SUCCESS, groupChatListResult));
+        return res.send(groupChatListResult);
     }
 };
 
