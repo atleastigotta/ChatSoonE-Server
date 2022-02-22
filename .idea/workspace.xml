@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b0873352-6942-4ee4-84ec-f4e92a1946ab" name="Changes" comment="서버 reopen">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/express.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/express.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,6 +104,12 @@
       <workItem from="1644752143562" duration="3066000" />
       <workItem from="1644810222730" duration="494000" />
       <workItem from="1644928233419" duration="2973000" />
+      <workItem from="1645019404170" duration="974000" />
+      <workItem from="1645100884634" duration="54000" />
+      <workItem from="1645201825353" duration="309000" />
+      <workItem from="1645230562377" duration="32000" />
+      <workItem from="1645495311462" duration="3064000" />
+      <workItem from="1645540043859" duration="1195000" />
     </task>
     <task id="LOCAL-00001" summary="브랜치 테스트">
       <created>1642412131406</created>
