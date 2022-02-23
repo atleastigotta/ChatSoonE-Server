@@ -30,7 +30,7 @@ exports.retrievePersonalChats = async function (userIdx, chatIdx) {
 
   connection.release();
 
-  return chatResult;
+  return response(baseResponse.SUCCESS, chatResult);
 };
 
 exports.retrieveGroupChats = async function (userIdx, chatIdx) {
@@ -45,7 +45,7 @@ exports.retrieveGroupChats = async function (userIdx, chatIdx) {
 
   connection.release();
 
-  return chatResult;
+  return response(baseResponse.SUCCESS, chatResult);
 };
 
 exports.retrieveFolderChats = async function (userIdx, folderIdx) {
